@@ -8,10 +8,12 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   const [linkUrl, setLinkUrl] = useState('')
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showHighlightPicker, setShowHighlightPicker] = useState(false)
+  const [showFontPicker, setShowFontPicker] = useState(false)
 
   const punctuationRef = useRef<HTMLDivElement>(null)
   const colorPickerRef = useRef<HTMLDivElement>(null)
   const highlightPickerRef = useRef<HTMLDivElement>(null)
+  const fontPickerRef = useRef<HTMLDivElement>(null)
 
   // 點擊外部關閉面板
   useEffect(() => {
@@ -24,6 +26,9 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
       }
       if (highlightPickerRef.current && !highlightPickerRef.current.contains(event.target as Node)) {
         setShowHighlightPicker(false)
+      }
+      if (fontPickerRef.current && !fontPickerRef.current.contains(event.target as Node)) {
+        setShowFontPicker(false)
       }
     }
 
@@ -246,13 +251,58 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
       printWindow.onload = () => {
         printWindow.focus()
         printWindow.print()
-        printWindow.close()
+        // 不自動關閉，讓用戶控制
       }
     }
   }
 
-  const colors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#888888']
-  const highlightColors = ['#FFFF00', '#00FF00', '#00FFFF', '#FF00FF', '#FFA500', '#FFB6C1']
+  // 更多顏色選項
+  const colors = [
+    '#000000',
+    '#ffffff',
+    '#FF0000',
+    '#FFA500',
+    '#FFFF00',
+    '#00FF00',
+    '#00FFFF',
+    '#0000FF',
+    '#FF00FF',
+    '#800000',
+    '#FF6B6B',
+    '#FFA07A',
+    '#FFD700',
+    '#90EE90',
+    '#87CEEB',
+    '#9370DB',
+    '#FFB6C1',
+    '#808080',
+  ]
+  const highlightColors = [
+    '#FFFF00',
+    '#FFD700',
+    '#FFA500',
+    '#FF6B6B',
+    '#FFB6C1',
+    '#FF00FF',
+    '#00FF00',
+    '#90EE90',
+    '#00FFFF',
+    '#87CEEB',
+    '#FFA07A',
+    '#E6E6FA',
+  ]
+  const fonts = [
+    { label: '預設字體', value: 'inherit' },
+    { label: '標楷體', value: 'DFKai-SB, BiauKai, 標楷體, serif' },
+    { label: '新細明體', value: 'PMingLiU, 新細明體, serif' },
+    { label: '微軟正黑體', value: 'Microsoft JhengHei, 微軟正黑體, sans-serif' },
+    { label: '微軟雅黑體', value: 'Microsoft YaHei, 微軟雅黑體, sans-serif' },
+    { label: '黑體', value: 'SimHei, 黑體, sans-serif' },
+    { label: '宋體', value: 'SimSun, 宋體, serif' },
+    { label: 'Arial', value: 'Arial, sans-serif' },
+    { label: 'Times New Roman', value: 'Times New Roman, serif' },
+    { label: 'Courier New', value: 'Courier New, monospace' },
+  ]
 
   return (
     <div className="toolbar">
@@ -328,6 +378,43 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           <option value="5">標題 5</option>
           <option value="6">標題 6</option>
         </select>
+      </div>
+
+      <div className="toolbar-divider"></div>
+
+      {/* 字體選擇 */}
+      <div className="toolbar-group">
+        <div className="font-picker-wrapper" ref={fontPickerRef}>
+          <button
+            onClick={() => setShowFontPicker(!showFontPicker)}
+            title="字體"
+            className="font-button"
+          >
+            字
+          </button>
+          {showFontPicker && (
+            <div className="font-picker-panel">
+              {fonts.map((font) => (
+                <button
+                  key={font.value}
+                  onClick={() => {
+                    if (font.value === 'inherit') {
+                      editor.chain().focus().unsetFontFamily().run()
+                    } else {
+                      editor.chain().focus().setFontFamily(font.value).run()
+                    }
+                    setShowFontPicker(false)
+                  }}
+                  style={{ fontFamily: font.value }}
+                  className="font-item"
+                  title={font.label}
+                >
+                  {font.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="toolbar-divider"></div>

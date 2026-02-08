@@ -12,6 +12,7 @@ import { Table } from '@tiptap/extension-table'
 import { TableRow } from '@tiptap/extension-table-row'
 import { TableCell } from '@tiptap/extension-table-cell'
 import { TableHeader } from '@tiptap/extension-table-header'
+import { FontFamily } from '@tiptap/extension-font-family'
 import { DocumentEditorProps } from './types/editor.types'
 import Toolbar from './Toolbar/Toolbar'
 import './styles/editor.css'
@@ -39,6 +40,9 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         alignments: ['left', 'center', 'right', 'justify'],
       }),
       TextStyle,
+      FontFamily.configure({
+        types: ['textStyle'],
+      }),
       Color,
       Highlight.configure({
         multicolor: true,

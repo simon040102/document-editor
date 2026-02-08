@@ -393,3 +393,46 @@
 .toolbar button.is-active .align-justify {
   transform: scaleX(1.3);
 }
+
+/* 字體選擇器 */
+.font-picker-wrapper {
+  position: relative;
+}
+
+.font-button {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.font-picker-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 5px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 180px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.font-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  background: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.font-item:hover {
+  background: #f0f0f0;
+}
