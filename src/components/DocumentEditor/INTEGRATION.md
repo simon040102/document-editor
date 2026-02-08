@@ -14,12 +14,12 @@
 ### 2️⃣ 安裝必要套件
 
 ```bash
-npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-color @tiptap/extension-highlight @tiptap/extension-link @tiptap/extension-image @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-cell @tiptap/extension-table-header
+npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-font-family @tiptap/extension-color @tiptap/extension-highlight @tiptap/extension-link @tiptap/extension-image @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-cell @tiptap/extension-table-header
 ```
 
 或使用 yarn：
 ```bash
-yarn add @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-color @tiptap/extension-highlight @tiptap/extension-link @tiptap/extension-image @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-cell @tiptap/extension-table-header
+yarn add @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-font-family @tiptap/extension-color @tiptap/extension-highlight @tiptap/extension-link @tiptap/extension-image @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-cell @tiptap/extension-table-header
 ```
 
 #### 套件列表
@@ -29,7 +29,8 @@ yarn add @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/e
 | @tiptap/starter-kit | ^3.19.0 | 基本編輯功能（粗體、斜體等） |
 | @tiptap/extension-underline | ^3.19.0 | 底線功能 |
 | @tiptap/extension-text-align | ^3.19.0 | 文字對齊 |
-| @tiptap/extension-text-style | ^3.19.0 | 文字樣式（顏色基礎） |
+| @tiptap/extension-text-style | ^3.19.0 | 文字樣式（顏色/字體基礎） |
+| @tiptap/extension-font-family | ^3.19.0 | 字體選擇 |
 | @tiptap/extension-color | ^3.19.0 | 文字顏色 |
 | @tiptap/extension-highlight | ^3.19.0 | 螢光筆 |
 | @tiptap/extension-link | ^3.19.0 | 超連結 |
@@ -142,10 +143,12 @@ function ExportHTML() {
 ### 基本功能
 - ✅ 粗體、斜體、底線、刪除線
 - ✅ 標題 H1-H6
-- ✅ 文字顏色、螢光筆
+- ✅ 字體選擇（標楷體、新細明體、微軟正黑體等 10 種字體）
+- ✅ 文字顏色（18 種顏色）、螢光筆（12 種顏色）
 - ✅ 文字對齊（左、中、右、兩端）
 - ✅ 項目符號、編號清單（中文數字：一、二、三）
 - ✅ 列表縮排（增加/減少）
+- ✅ 列印功能（只列印編輯器內容）
 
 ### 中文特色功能
 - ✅ 中文標點符號快速插入面板
