@@ -138,9 +138,14 @@
   width: 2.5em;
 }
 
-.ProseMirror li {
-  margin: 0.2em 0;
+/* 列表項目樣式 */
+.ProseMirror ol > li {
   list-style: none;
+  margin: 0.2em 0;
+}
+
+.ProseMirror ul > li {
+  margin: 0.2em 0;
 }
 
 .ProseMirror li p {
