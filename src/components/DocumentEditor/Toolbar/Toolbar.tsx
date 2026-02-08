@@ -106,7 +106,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               ol {
                 list-style: none;
                 counter-reset: list-counter;
-                padding-left: 2.5em;
+                padding-left: 3.5em;
               }
 
               ol > li {
@@ -123,8 +123,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               ol > li::before {
                 content: counter(list-counter, trad-chinese-informal) '、';
                 position: absolute;
-                left: -2.5em;
-                width: 2em;
+                left: -3.5em;
+                width: 3em;
                 text-align: right;
                 color: #000;
                 font-weight: 500;
@@ -132,19 +132,22 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
 
               ol ol {
                 counter-reset: list-counter;
-                padding-left: 2.5em;
+                padding-left: 3.5em;
               }
 
               ol ol > li::before {
                 content: '(' counter(list-counter, trad-chinese-informal) ')';
+                width: 3em;
               }
 
               ol ol ol {
                 counter-reset: list-counter;
+                padding-left: 3em;
               }
 
               ol ol ol > li::before {
                 content: counter(list-counter, decimal) '.';
+                width: 2.5em;
               }
 
               li {
