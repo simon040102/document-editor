@@ -1,0 +1,190 @@
+/* Link Bubble Menu */
+.link-bubble-menu {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 500px;
+}
+
+.link-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.link-url {
+  color: #0066cc;
+  text-decoration: none;
+  font-size: 14px;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 4px 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.link-url:hover {
+  background: #e8e8e8;
+}
+
+.link-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.link-actions button {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.link-actions button:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.link-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.link-edit-form input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 250px;
+}
+
+.link-edit-form input:focus {
+  outline: none;
+  border-color: #0066cc;
+}
+
+.link-edit-form button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.link-edit-form button:hover {
+  background: #f5f5f5;
+}
+
+.link-edit-form button:first-of-type {
+  background: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.link-edit-form button:first-of-type:hover {
+  background: #0052a3;
+}
+
+/* Table Bubble Menu */
+.table-bubble-menu {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  flex-wrap: wrap;
+}
+
+.table-menu-section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.menu-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.table-menu-divider {
+  width: 1px;
+  height: 24px;
+  background: #ddd;
+}
+
+.table-bubble-menu button {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.table-bubble-menu button:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.table-bubble-menu button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.table-bubble-menu button.danger-button {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.table-bubble-menu button.danger-button:hover:not(:disabled) {
+  background: #d32f2f;
+  color: white;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .link-bubble-menu {
+    max-width: 90vw;
+  }
+
+  .link-url {
+    max-width: 200px;
+  }
+
+  .link-edit-form input {
+    min-width: 150px;
+  }
+
+  .table-bubble-menu {
+    left: 10px;
+    right: 10px;
+    transform: none;
+    justify-content: center;
+  }
+}

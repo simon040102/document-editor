@@ -13,8 +13,12 @@ import { TableRow } from '@tiptap/extension-table-row'
 import { TableCell } from '@tiptap/extension-table-cell'
 import { TableHeader } from '@tiptap/extension-table-header'
 import { FontFamily } from '@tiptap/extension-font-family'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
 import { DocumentEditorProps } from './types/editor.types'
 import Toolbar from './Toolbar/Toolbar'
+import LinkBubbleMenu from './BubbleMenu/LinkBubbleMenu'
+import TableBubbleMenu from './BubbleMenu/TableBubbleMenu'
 import './styles/editor.css'
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
@@ -35,6 +39,8 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         },
       }),
       Underline,
+      Subscript,
+      Superscript,
       TextAlign.configure({
         types: ['heading', 'paragraph'],
         alignments: ['left', 'center', 'right', 'justify'],
@@ -57,13 +63,27 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       Image.configure({
         inline: true,
         allowBase64: true,
+        HTMLAttributes: {
+          class: 'editor-image',
+        },
       }),
       Table.configure({
         resizable: true,
+        HTMLAttributes: {
+          class: 'editor-table',
+        },
       }),
       TableRow,
-      TableCell,
-      TableHeader,
+      TableCell.configure({
+        HTMLAttributes: {
+          class: 'editor-table-cell',
+        },
+      }),
+      TableHeader.configure({
+        HTMLAttributes: {
+          class: 'editor-table-header',
+        },
+      }),
     ],
     content,
     editable,
@@ -111,6 +131,8 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       <Toolbar editor={editor} />
       <div className="editor-container">
         <EditorContent editor={editor} placeholder={placeholder} />
+        <LinkBubbleMenu editor={editor} />
+        <TableBubbleMenu editor={editor} />
       </div>
     </div>
   )

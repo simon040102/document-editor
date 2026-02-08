@@ -9,6 +9,9 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showHighlightPicker, setShowHighlightPicker] = useState(false)
   const [showFontPicker, setShowFontPicker] = useState(false)
+  const [showImageModal, setShowImageModal] = useState(false)
+  const [imageUrl, setImageUrl] = useState('')
+  const [wordCount, setWordCount] = useState({ characters: 0, words: 0 })
 
   const punctuationRef = useRef<HTMLDivElement>(null)
   const colorPickerRef = useRef<HTMLDivElement>(null)
@@ -36,6 +39,23 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // 字數統計
+  useEffect(() => {
+    const updateWordCount = () => {
+      const text = editor.getText()
+      const characters = text.length
+      const words = text.trim().split(/\s+/).filter((word) => word.length > 0).length
+      setWordCount({ characters, words })
+    }
+
+    updateWordCount()
+    editor.on('update', updateWordCount)
+
+    return () => {
+      editor.off('update', updateWordCount)
+    }
+  }, [editor])
+
   if (!editor) {
     return null
   }
@@ -54,10 +74,34 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   }
 
   const addImage = () => {
-    const url = window.prompt('請輸入圖片 URL:')
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
+    setShowImageModal(true)
+  }
+
+  const insertImageFromUrl = () => {
+    if (imageUrl) {
+      editor.chain().focus().setImage({ src: imageUrl }).run()
+      setImageUrl('')
+      setShowImageModal(false)
     }
+  }
+
+  const insertImageFromFile = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          const src = event.target?.result as string
+          editor.chain().focus().setImage({ src }).run()
+          setShowImageModal(false)
+        }
+        reader.readAsDataURL(file)
+      }
+    }
+    input.click()
   }
 
   const insertTable = () => {
@@ -338,6 +382,20 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           title="刪除線"
         >
           <s>S</s>
+        </button>
+        <button
+          onClick={() => editor.chain().focus().toggleSuperscript().run()}
+          className={editor.isActive('superscript') ? 'is-active' : ''}
+          title="上標 (x²)"
+        >
+          x<sup>2</sup>
+        </button>
+        <button
+          onClick={() => editor.chain().focus().toggleSubscript().run()}
+          className={editor.isActive('subscript') ? 'is-active' : ''}
+          title="下標 (H₂O)"
+        >
+          x<sub>2</sub>
         </button>
       </div>
 
@@ -690,6 +748,15 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
         </button>
       </div>
 
+      <div className="toolbar-divider"></div>
+
+      {/* 字數統計 */}
+      <div className="toolbar-group word-count">
+        <span title="字數統計">
+          {wordCount.characters} 字 / {wordCount.words} 詞
+        </span>
+      </div>
+
       {/* 連結Modal */}
       {showLinkModal && (
         <div className="modal-overlay" onClick={() => setShowLinkModal(false)}>
@@ -706,6 +773,37 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             <div className="modal-buttons">
               <button onClick={setLink}>確定</button>
               <button onClick={() => setShowLinkModal(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 圖片Modal */}
+      {showImageModal && (
+        <div className="modal-overlay" onClick={() => setShowImageModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>插入圖片</h3>
+            <div className="image-insert-options">
+              <div className="image-option">
+                <label>圖片URL：</label>
+                <input
+                  type="url"
+                  placeholder="https://example.com/image.jpg"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && insertImageFromUrl()}
+                />
+                <button onClick={insertImageFromUrl}>插入URL</button>
+              </div>
+              <div className="image-divider">或</div>
+              <div className="image-option">
+                <button onClick={insertImageFromFile} className="file-upload-button">
+                  📁 從電腦選擇圖片
+                </button>
+              </div>
+            </div>
+            <div className="modal-buttons">
+              <button onClick={() => setShowImageModal(false)}>取消</button>
             </div>
           </div>
         </div>

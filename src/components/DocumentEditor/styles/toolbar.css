@@ -436,3 +436,116 @@
 .font-item:hover {
   background: #f0f0f0;
 }
+
+/* 字數統計樣式 */
+.word-count {
+  margin-left: auto;
+  padding: 0 12px;
+}
+
+.word-count span {
+  font-size: 13px;
+  color: #6c757d;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* 圖片插入 Modal 樣式 */
+.image-insert-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.image-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.image-option label {
+  font-size: 14px;
+  color: #495057;
+  font-weight: 500;
+}
+
+.image-option input {
+  margin-bottom: 0;
+}
+
+.image-option button {
+  padding: 8px 16px;
+  background: #0d6efd;
+  color: white;
+  border: 1px solid #0d6efd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.image-option button:hover {
+  background: #0b5ed7;
+  border-color: #0b5ed7;
+}
+
+.file-upload-button {
+  width: 100%;
+  padding: 12px 16px !important;
+  background: #28a745 !important;
+  border-color: #28a745 !important;
+  font-size: 14px;
+}
+
+.file-upload-button:hover {
+  background: #218838 !important;
+  border-color: #218838 !important;
+}
+
+.image-divider {
+  text-align: center;
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+}
+
+.image-divider::before,
+.image-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #dee2e6;
+}
+
+.image-divider::before {
+  left: 0;
+}
+
+.image-divider::after {
+  right: 0;
+}
+
+/* 上標下標按鈕樣式 */
+.toolbar button sup,
+.toolbar button sub {
+  font-size: 0.7em;
+  line-height: 0;
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+  .word-count {
+    display: none;
+  }
+
+  .image-insert-options {
+    gap: 12px;
+  }
+
+  .modal-content {
+    min-width: 280px;
+  }
+}

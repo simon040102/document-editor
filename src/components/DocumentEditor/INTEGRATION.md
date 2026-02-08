@@ -14,12 +14,12 @@
 ### 2️⃣ 安裝必要套件
 
 ```bash
-npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-font-family @tiptap/extension-color @tiptap/extension-highlight @tiptap/extension-link @tiptap/extension-image @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-cell @tiptap/extension-table-header
+npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-font-family @tiptap/extension-color @tiptap/extension-highlight @tiptap/extension-link @tiptap/extension-image @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-cell @tiptap/extension-table-header @tiptap/extension-subscript @tiptap/extension-superscript
 ```
 
 或使用 yarn：
 ```bash
-yarn add @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-font-family @tiptap/extension-color @tiptap/extension-highlight @tiptap/extension-link @tiptap/extension-image @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-cell @tiptap/extension-table-header
+yarn add @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-font-family @tiptap/extension-color @tiptap/extension-highlight @tiptap/extension-link @tiptap/extension-image @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-cell @tiptap/extension-table-header @tiptap/extension-subscript @tiptap/extension-superscript
 ```
 
 #### 套件列表
@@ -28,6 +28,8 @@ yarn add @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/e
 | @tiptap/react | ^3.19.0 | Tiptap React 核心 |
 | @tiptap/starter-kit | ^3.19.0 | 基本編輯功能（粗體、斜體等） |
 | @tiptap/extension-underline | ^3.19.0 | 底線功能 |
+| @tiptap/extension-subscript | ^3.19.0 | 下標功能 (H₂O) |
+| @tiptap/extension-superscript | ^3.19.0 | 上標功能 (x²) |
 | @tiptap/extension-text-align | ^3.19.0 | 文字對齊 |
 | @tiptap/extension-text-style | ^3.19.0 | 文字樣式（顏色/字體基礎） |
 | @tiptap/extension-font-family | ^3.19.0 | 字體選擇 |
@@ -140,31 +142,57 @@ function ExportHTML() {
 
 ## 🎯 功能說明
 
-### 基本功能
-- ✅ 粗體、斜體、底線、刪除線
-- ✅ 標題 H1-H6
-- ✅ 字體選擇（標楷體、新細明體、微軟正黑體等 10 種字體）
-- ✅ 文字顏色（18 種顏色）、螢光筆（12 種顏色）
-- ✅ 文字對齊（左、中、右、兩端）
-- ✅ 項目符號、編號清單（中文數字：一、二、三）
-- ✅ 列表縮排（增加/減少）
-- ✅ 列印功能（只列印編輯器內容）
+### 基本格式化
+- ✅ **粗體、斜體、底線、刪除線**
+- ✅ **上標 (x²)、下標 (H₂O)** - 適合數學和化學公式
+- ✅ **標題 H1-H6**
+- ✅ **字體選擇** - 10 種字體（標楷體、新細明體、微軟正黑體等）
+- ✅ **文字顏色** - 18 種顏色
+- ✅ **螢光筆** - 12 種顏色
+- ✅ **文字對齊** - 左、中、右、兩端對齊
+
+### 列表功能
+- ✅ **項目符號列表**
+- ✅ **編號列表** - 使用中文數字（一、二、三...）
+- ✅ **列表縮排** - 增加/減少縮排層級
+- ✅ **多層巢狀列表** - 支援三層以上的巢狀結構
 
 ### 中文特色功能
-- ✅ 中文標點符號快速插入面板
+- ✅ **中文標點符號快速插入面板**
   - 常用標點：、。，：；！？
   - 特殊符號：— … ～ · ※
   - 括號類：「」『』（）【】《》〈〉
 
-### 進階功能
-- ✅ 超連結插入
-- ✅ 圖片插入
-- ✅ 表格插入
-- ✅ 引用區塊
-- ✅ 程式碼區塊
-- ✅ 分隔線
-- ✅ 復原/重做
-- ✅ 清除格式
+### 連結與媒體
+- ✅ **連結管理**
+  - 插入連結
+  - **Bubble Menu 即時編輯** - 點擊連結即可編輯或移除
+  - 開啟連結預覽
+- ✅ **圖片插入**
+  - 從 URL 插入
+  - **從本地上傳** - 支援拖曳上傳
+  - 圖片選取時顯示外框
+  - Hover 效果
+
+### 專業表格功能
+- ✅ **表格插入** - 預設 3x3 帶標題行
+- ✅ **表格編輯工具列** - 選中表格時自動顯示
+  - 添加/刪除行（上方/下方）
+  - 添加/刪除列（左方/右方）
+  - **合併儲存格**
+  - **分割儲存格**
+  - 切換標題行/標題列
+  - 刪除整個表格
+- ✅ **表格拖拽調整** - 可調整列寬
+
+### 其他進階功能
+- ✅ **引用區塊**
+- ✅ **程式碼區塊** - 適合技術文件
+- ✅ **分隔線**
+- ✅ **復原/重做** - 完整的編輯歷史
+- ✅ **清除格式** - 一鍵移除所有格式
+- ✅ **列印功能** - 只列印編輯器內容，保持格式
+- ✅ **字數統計** - 即時顯示字數和詞數
 
 ## ⚙️ React 版本相容性
 

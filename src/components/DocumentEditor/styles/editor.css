@@ -209,6 +209,18 @@
   height: auto;
   border-radius: 4px;
   margin: 0.5em 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ProseMirror img:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.02);
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
 }
 
 /* 表格 */
@@ -217,6 +229,7 @@
   width: 100%;
   margin: 1em 0;
   overflow: hidden;
+  table-layout: fixed;
 }
 
 .ProseMirror th,
@@ -225,6 +238,8 @@
   padding: 0.5em 0.75em;
   text-align: left;
   min-width: 100px;
+  vertical-align: top;
+  position: relative;
 }
 
 .ProseMirror th {
@@ -233,11 +248,27 @@
 }
 
 .ProseMirror td {
-  vertical-align: top;
+  background: white;
 }
 
 .ProseMirror .selectedCell {
-  background: #e3f2fd;
+  background: #e3f2fd !important;
+}
+
+.ProseMirror table p {
+  margin: 0;
+}
+
+/* 表格列調整大小手柄 */
+.ProseMirror .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #0066cc;
+  cursor: col-resize;
+  z-index: 20;
 }
 
 /* 文字對齊 */
@@ -262,6 +293,19 @@
   background-color: #ffeb3b;
   padding: 0 0.2em;
   border-radius: 2px;
+}
+
+/* 上標和下標 */
+.ProseMirror sup {
+  vertical-align: super;
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+.ProseMirror sub {
+  vertical-align: sub;
+  font-size: 0.75em;
+  line-height: 0;
 }
 
 /* 選取時的樣式 */
