@@ -60,7 +60,195 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   }
 
   const handlePrint = () => {
-    window.print()
+    // 獲取編輯器的 HTML 內容
+    const content = editor.getHTML()
+
+    // 創建一個新視窗用於列印
+    const printWindow = window.open('', '_blank', 'width=800,height=600')
+
+    if (printWindow) {
+      // 寫入 HTML 內容和樣式
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>列印文件</title>
+            <style>
+              @page {
+                margin: 2cm;
+              }
+
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                font-size: 12pt;
+                line-height: 1.6;
+                color: #000;
+                max-width: 800px;
+                margin: 0 auto;
+              }
+
+              h1 { font-size: 18pt; margin: 1em 0 0.5em; page-break-after: avoid; }
+              h2 { font-size: 16pt; margin: 0.8em 0 0.4em; page-break-after: avoid; }
+              h3 { font-size: 14pt; margin: 0.6em 0 0.3em; page-break-after: avoid; }
+              h4, h5, h6 { font-size: 12pt; margin: 0.5em 0 0.2em; page-break-after: avoid; }
+
+              p { margin: 0.5em 0; orphans: 3; widows: 3; }
+
+              ul, ol { padding-left: 2em; margin: 0.5em 0; }
+
+              /* 中文數字列表 */
+              ol {
+                list-style: none;
+                counter-reset: list-counter;
+                padding-left: 2.5em;
+              }
+
+              ol > li {
+                counter-increment: list-counter;
+                position: relative;
+                list-style: none;
+              }
+
+              ol > li::marker {
+                content: none;
+                display: none;
+              }
+
+              ol > li::before {
+                content: counter(list-counter, trad-chinese-informal) '、';
+                position: absolute;
+                left: -2.5em;
+                width: 2em;
+                text-align: right;
+                color: #000;
+                font-weight: 500;
+              }
+
+              ol ol {
+                counter-reset: list-counter;
+                padding-left: 2.5em;
+              }
+
+              ol ol > li::before {
+                content: '(' counter(list-counter, trad-chinese-informal) ')';
+              }
+
+              ol ol ol {
+                counter-reset: list-counter;
+              }
+
+              ol ol ol > li::before {
+                content: counter(list-counter, decimal) '.';
+              }
+
+              li {
+                margin: 0.2em 0;
+                list-style: none;
+                page-break-inside: avoid;
+              }
+
+              blockquote {
+                border-left: 2pt solid #666;
+                padding-left: 1em;
+                margin: 1em 0;
+                color: #333;
+                page-break-inside: avoid;
+              }
+
+              code {
+                background: #f5f5f5;
+                padding: 0.2em 0.4em;
+                border-radius: 3px;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 0.9em;
+              }
+
+              pre {
+                background: #f5f5f5;
+                color: #000;
+                padding: 1em;
+                border: 1pt solid #ddd;
+                border-radius: 5px;
+                overflow-x: auto;
+                margin: 1em 0;
+                page-break-inside: avoid;
+              }
+
+              pre code {
+                background: none;
+                padding: 0;
+              }
+
+              hr {
+                border: none;
+                border-top: 1pt solid #000;
+                margin: 2em 0;
+                page-break-after: avoid;
+              }
+
+              a {
+                color: #0066cc;
+                text-decoration: underline;
+              }
+
+              a::after {
+                content: ' (' attr(href) ')';
+                font-size: 0.8em;
+                color: #666;
+              }
+
+              img {
+                max-width: 100%;
+                height: auto;
+                page-break-inside: avoid;
+              }
+
+              table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 1em 0;
+                page-break-inside: avoid;
+              }
+
+              th, td {
+                border: 1pt solid #000;
+                padding: 4pt 8pt;
+                text-align: left;
+              }
+
+              th {
+                background: #f5f5f5;
+                font-weight: bold;
+              }
+
+              mark {
+                background-color: #ffeb3b;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+
+              [style*='text-align: left'] { text-align: left; }
+              [style*='text-align: center'] { text-align: center; }
+              [style*='text-align: right'] { text-align: right; }
+              [style*='text-align: justify'] { text-align: justify; }
+            </style>
+          </head>
+          <body>
+            ${content}
+          </body>
+        </html>
+      `)
+
+      printWindow.document.close()
+
+      // 等待內容載入後執行列印
+      printWindow.onload = () => {
+        printWindow.focus()
+        printWindow.print()
+        printWindow.close()
+      }
+    }
   }
 
   const colors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#888888']
