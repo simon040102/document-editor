@@ -93,7 +93,7 @@
 .ProseMirror ol {
   list-style: none;
   counter-reset: list-counter;
-  padding-left: 3.5em;
+  padding-left: 5em;
 }
 
 .ProseMirror ol > li {
@@ -110,8 +110,8 @@
 .ProseMirror ol > li::before {
   content: counter(list-counter, trad-chinese-informal) '、';
   position: absolute;
-  left: -3.5em;
-  width: 3em;
+  left: -5em;
+  width: 4.5em;
   text-align: right;
   color: #495057;
   font-weight: 500;
@@ -120,12 +120,12 @@
 /* 巢狀列表的不同層級樣式 */
 .ProseMirror ol ol {
   counter-reset: list-counter;
-  padding-left: 3.5em;
+  padding-left: 4em;
 }
 
 .ProseMirror ol ol > li::before {
   content: '(' counter(list-counter, trad-chinese-informal) ')';
-  width: 3em;
+  width: 3.5em;
 }
 
 .ProseMirror ol ol ol {
