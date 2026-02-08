@@ -14,8 +14,6 @@ const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
   // 檢查當前選區是否在連結上
   React.useEffect(() => {
     const updateMenu = () => {
-      const { state } = editor
-      const { from, to } = state.selection
       const isLink = editor.isActive('link')
 
       if (isLink) {

@@ -41,6 +41,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
 
   // 字數統計
   useEffect(() => {
+    if (!editor) return
+
     const updateWordCount = () => {
       const text = editor.getText()
       const characters = text.length
