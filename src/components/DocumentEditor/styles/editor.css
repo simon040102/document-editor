@@ -1,0 +1,280 @@
+/* Document Editor 主容器 */
+.document-editor {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 500px;
+}
+
+/* 編輯器容器 */
+.editor-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #fff;
+}
+
+/* Tiptap 編輯器內容區域 */
+.ProseMirror {
+  outline: none;
+  min-height: 400px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* Placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+/* 標題樣式 */
+.ProseMirror h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 1em 0 0.5em;
+  line-height: 1.2;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.8em 0 0.4em;
+  line-height: 1.3;
+}
+
+.ProseMirror h3 {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 0.6em 0 0.3em;
+  line-height: 1.4;
+}
+
+.ProseMirror h4 {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0.5em 0 0.2em;
+}
+
+.ProseMirror h5,
+.ProseMirror h6 {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0.4em 0 0.2em;
+}
+
+/* 段落 */
+.ProseMirror p {
+  margin: 0.5em 0;
+}
+
+/* 列表 */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 2em;
+  margin: 0.5em 0;
+}
+
+/* 有序列表使用中文數字 */
+.ProseMirror ol {
+  list-style: none;
+  counter-reset: list-counter;
+  padding-left: 2.5em;
+}
+
+.ProseMirror ol > li {
+  counter-increment: list-counter;
+  position: relative;
+  list-style: none;
+}
+
+.ProseMirror ol > li::marker {
+  content: none;
+  display: none;
+}
+
+.ProseMirror ol > li::before {
+  content: counter(list-counter, trad-chinese-informal) '、';
+  position: absolute;
+  left: -2.5em;
+  width: 2em;
+  text-align: right;
+  color: #495057;
+  font-weight: 500;
+}
+
+/* 巢狀列表的不同層級樣式 */
+.ProseMirror ol ol {
+  counter-reset: list-counter;
+  padding-left: 2.5em;
+}
+
+.ProseMirror ol ol > li::before {
+  content: '(' counter(list-counter, trad-chinese-informal) ')';
+}
+
+.ProseMirror ol ol ol {
+  counter-reset: list-counter;
+}
+
+.ProseMirror ol ol ol > li::before {
+  content: counter(list-counter, decimal) '.';
+}
+
+.ProseMirror li {
+  margin: 0.2em 0;
+  list-style: none;
+}
+
+.ProseMirror li p {
+  margin: 0;
+}
+
+/* 引用 */
+.ProseMirror blockquote {
+  border-left: 4px solid #ddd;
+  padding-left: 1em;
+  margin: 1em 0;
+  color: #666;
+  font-style: italic;
+}
+
+/* 程式碼區塊 */
+.ProseMirror code {
+  background: #f5f5f5;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9em;
+}
+
+.ProseMirror pre {
+  background: #2d2d2d;
+  color: #f8f8f2;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.ProseMirror pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+/* 分隔線 */
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid #ddd;
+  margin: 2em 0;
+}
+
+/* 連結 */
+.ProseMirror a {
+  color: #0066cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ProseMirror a:hover {
+  color: #0052a3;
+}
+
+/* 圖片 */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5em 0;
+}
+
+/* 表格 */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  overflow: hidden;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid #ddd;
+  padding: 0.5em 0.75em;
+  text-align: left;
+  min-width: 100px;
+}
+
+.ProseMirror th {
+  background: #f5f5f5;
+  font-weight: bold;
+}
+
+.ProseMirror td {
+  vertical-align: top;
+}
+
+.ProseMirror .selectedCell {
+  background: #e3f2fd;
+}
+
+/* 文字對齊 */
+.ProseMirror [style*='text-align: left'] {
+  text-align: left;
+}
+
+.ProseMirror [style*='text-align: center'] {
+  text-align: center;
+}
+
+.ProseMirror [style*='text-align: right'] {
+  text-align: right;
+}
+
+.ProseMirror [style*='text-align: justify'] {
+  text-align: justify;
+}
+
+/* 螢光筆 */
+.ProseMirror mark {
+  background-color: #ffeb3b;
+  padding: 0 0.2em;
+  border-radius: 2px;
+}
+
+/* 選取時的樣式 */
+.ProseMirror ::selection {
+  background: #b3d4fc;
+}
+
+/* 滾動條美化 */
+.editor-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.editor-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.editor-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

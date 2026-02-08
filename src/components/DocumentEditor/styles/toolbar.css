@@ -1,0 +1,395 @@
+/* Toolbar 主容器 */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  align-items: center;
+}
+
+/* 工具列群組 */
+.toolbar-group {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+/* 分隔線 */
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: #dee2e6;
+  margin: 0 4px;
+}
+
+/* 基本按鈕樣式 */
+.toolbar button {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #495057;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.toolbar button:active:not(:disabled) {
+  background: #dee2e6;
+}
+
+.toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbar button.is-active {
+  background: #0d6efd;
+  color: #fff;
+  border-color: #0d6efd;
+}
+
+.toolbar button.is-active:hover {
+  background: #0b5ed7;
+  border-color: #0b5ed7;
+}
+
+/* 標題選擇器 */
+.heading-select {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 14px;
+  color: #495057;
+  cursor: pointer;
+  min-width: 100px;
+  height: 32px;
+}
+
+.heading-select:hover {
+  border-color: #adb5bd;
+}
+
+.heading-select:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* 顏色選擇器 */
+.color-picker-wrapper {
+  position: relative;
+}
+
+.color-button,
+.highlight-button {
+  font-weight: bold;
+  position: relative;
+}
+
+.color-button::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 3px;
+  background: currentColor;
+}
+
+.color-picker-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 200px;
+  z-index: 1000;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0;
+  min-width: 24px;
+}
+
+.color-swatch:hover {
+  border-color: #0d6efd;
+  transform: scale(1.1);
+}
+
+.color-clear {
+  flex: 1 0 100%;
+  background: #fff !important;
+  color: #dc3545;
+  font-size: 12px;
+  padding: 4px;
+  height: auto;
+  min-width: auto;
+}
+
+/* 中文標點符號面板 */
+.punctuation-wrapper {
+  position: relative;
+}
+
+.punctuation-trigger {
+  min-width: 40px;
+  font-weight: bold;
+}
+
+.punctuation-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.punctuation-section {
+  margin-bottom: 12px;
+}
+
+.punctuation-section:last-child {
+  margin-bottom: 0;
+}
+
+.punctuation-label {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.punctuation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 4px;
+}
+
+.punctuation-item {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #212529;
+  transition: all 0.2s;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.punctuation-item:hover {
+  background: #e9ecef;
+  border-color: #0d6efd;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.punctuation-item:active {
+  transform: translateY(0);
+}
+
+.punctuation-item.bracket {
+  font-size: 14px;
+  letter-spacing: -2px;
+}
+
+/* Modal 樣式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #212529;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.modal-content input:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modal-buttons button {
+  padding: 8px 16px;
+  min-width: 80px;
+}
+
+.modal-buttons button:first-child {
+  background: #0d6efd;
+  color: #fff;
+  border-color: #0d6efd;
+}
+
+.modal-buttons button:first-child:hover {
+  background: #0b5ed7;
+  border-color: #0b5ed7;
+}
+
+.modal-buttons button:last-child {
+  background: #6c757d;
+  color: #fff;
+  border-color: #6c757d;
+}
+
+.modal-buttons button:last-child:hover {
+  background: #5c636a;
+  border-color: #5c636a;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 8px;
+    gap: 2px;
+  }
+
+  .toolbar button {
+    min-width: 28px;
+    height: 28px;
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+
+  .heading-select {
+    min-width: 80px;
+    font-size: 12px;
+    height: 28px;
+  }
+
+  .punctuation-panel {
+    min-width: 250px;
+  }
+
+  .modal-content {
+    min-width: 300px;
+    margin: 0 16px;
+  }
+}
+
+/* 對齊圖示樣式 - 讓每個對齊方式看起來不同 */
+.align-icon {
+  display: inline-block;
+  font-size: 16px;
+  line-height: 1;
+  transform-origin: center;
+}
+
+/* 靠左對齊 - 圖示往左傾斜 */
+.align-left {
+  transform: scaleX(0.8);
+  margin-right: auto;
+}
+
+/* 置中對齊 - 圖示縮小 */
+.align-center {
+  transform: scale(0.8);
+  opacity: 0.9;
+}
+
+/* 靠右對齊 - 圖示往右傾斜 */
+.align-right {
+  transform: scaleX(0.8);
+  margin-left: auto;
+}
+
+/* 兩端對齊 - 圖示拉寬 */
+.align-justify {
+  transform: scaleX(1.2);
+  font-weight: bold;
+}
+
+/* 對齊按鈕 hover 效果 */
+.toolbar button .align-icon {
+  transition: all 0.2s;
+}
+
+.toolbar button:hover .align-icon {
+  transform: scale(1.1);
+}
+
+.toolbar button.is-active .align-left {
+  transform: scaleX(0.9);
+}
+
+.toolbar button.is-active .align-center {
+  transform: scale(0.9);
+}
+
+.toolbar button.is-active .align-right {
+  transform: scaleX(0.9);
+}
+
+.toolbar button.is-active .align-justify {
+  transform: scaleX(1.3);
+}
