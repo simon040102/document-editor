@@ -59,6 +59,10 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
   }
 
+  const handlePrint = () => {
+    window.print()
+  }
+
   const colors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#888888']
   const highlightColors = ['#FFFF00', '#00FF00', '#00FFFF', '#FF00FF', '#FFA500', '#FFB6C1']
 
@@ -402,6 +406,9 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
         </button>
         <button onClick={() => editor.chain().focus().unsetAllMarks().run()} title="清除格式">
           ✗
+        </button>
+        <button onClick={handlePrint} title="列印 (Ctrl+P)">
+          🖨️
         </button>
       </div>
 

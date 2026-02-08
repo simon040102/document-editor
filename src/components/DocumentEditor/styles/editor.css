@@ -278,3 +278,168 @@
 .editor-container::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* ==================== 列印樣式 ==================== */
+@media print {
+  /* 隱藏工具列 */
+  .toolbar {
+    display: none !important;
+  }
+
+  /* 隱藏所有互動元素 */
+  button,
+  .modal-overlay,
+  .punctuation-panel,
+  .color-picker-panel {
+    display: none !important;
+  }
+
+  /* 編輯器容器調整 */
+  .document-editor {
+    border: none;
+    box-shadow: none;
+    background: white;
+    min-height: auto;
+    height: auto;
+  }
+
+  .editor-container {
+    padding: 0;
+    overflow: visible;
+  }
+
+  /* 編輯器內容 */
+  .ProseMirror {
+    min-height: auto;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #000;
+  }
+
+  /* 標題列印樣式 */
+  .ProseMirror h1 {
+    font-size: 18pt;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .ProseMirror h2 {
+    font-size: 16pt;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .ProseMirror h3 {
+    font-size: 14pt;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .ProseMirror h4,
+  .ProseMirror h5,
+  .ProseMirror h6 {
+    font-size: 12pt;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* 段落 */
+  .ProseMirror p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* 列表列印樣式 */
+  .ProseMirror ul,
+  .ProseMirror ol {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .ProseMirror li {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 保持中文數字格式 */
+  .ProseMirror ol > li::before {
+    color: #000;
+  }
+
+  /* 引用 */
+  .ProseMirror blockquote {
+    border-left: 2pt solid #666;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 程式碼區塊 */
+  .ProseMirror pre {
+    background: #f5f5f5;
+    color: #000;
+    border: 1pt solid #ddd;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .ProseMirror code {
+    background: #f5f5f5;
+    color: #000;
+  }
+
+  /* 分隔線 */
+  .ProseMirror hr {
+    border-top: 1pt solid #000;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* 連結 */
+  .ProseMirror a {
+    color: #0066cc;
+    text-decoration: underline;
+  }
+
+  /* 顯示連結網址 */
+  .ProseMirror a::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  /* 圖片 */
+  .ProseMirror img {
+    max-width: 100%;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 表格 */
+  .ProseMirror table {
+    border-collapse: collapse;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .ProseMirror th,
+  .ProseMirror td {
+    border: 1pt solid #000;
+    padding: 4pt 8pt;
+  }
+
+  .ProseMirror th {
+    background: #f5f5f5;
+  }
+
+  /* 移除選取背景色 */
+  .ProseMirror ::selection {
+    background: transparent;
+  }
+
+  /* 移除螢光筆背景（或改為淡色） */
+  .ProseMirror mark {
+    background-color: #ffeb3b;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
