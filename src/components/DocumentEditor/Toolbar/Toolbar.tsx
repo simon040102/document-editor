@@ -263,6 +263,20 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
                 width: 2.3em;
               }
 
+              /* 第 7 層：子、 地支 + 全形頓號 */
+              ol ol ol ol ol ol ol {
+                counter-reset: list-L7;
+                padding-left: 2.5em;
+              }
+
+              ol ol ol ol ol ol ol > li { counter-increment: list-L7; }
+
+              ol ol ol ol ol ol ol > li::before {
+                content: counter(list-L7, cjk-earthly-branch) '\u3001';
+                left: -2.5em;
+                width: 2.3em;
+              }
+
               li {
                 margin: 0.2em 0;
                 list-style: none;
@@ -276,6 +290,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               ol ol ol ol[data-restart-numbering="true"] { counter-set: list-L4 0; }
               ol ol ol ol ol[data-restart-numbering="true"] { counter-set: list-L5 0; }
               ol ol ol ol ol ol[data-restart-numbering="true"] { counter-set: list-L6 0; }
+              ol ol ol ol ol ol ol[data-restart-numbering="true"] { counter-set: list-L7 0; }
 
               blockquote {
                 border-left: 2pt solid #666;

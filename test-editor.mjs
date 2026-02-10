@@ -775,9 +775,130 @@ async function runTests() {
   else fail('巢狀 ol[1] 應有 restart')
 
   // ============================
+  // [10] 7 層巢狀列表測試
+  // ============================
+  console.log('\n[10] 7 層巢狀列表測試')
+
+  const testJSON6 = {
+    type: 'doc',
+    content: [
+      { type: 'orderedList', content: [
+        { type: 'listItem', content: [
+          { type: 'paragraph', content: [{ type: 'text', text: 'L1 一、' }] },
+          { type: 'orderedList', content: [
+            { type: 'listItem', content: [
+              { type: 'paragraph', content: [{ type: 'text', text: 'L2 (一)' }] },
+              { type: 'orderedList', content: [
+                { type: 'listItem', content: [
+                  { type: 'paragraph', content: [{ type: 'text', text: 'L3 1、' }] },
+                  { type: 'orderedList', content: [
+                    { type: 'listItem', content: [
+                      { type: 'paragraph', content: [{ type: 'text', text: 'L4 (1)' }] },
+                      { type: 'orderedList', content: [
+                        { type: 'listItem', content: [
+                          { type: 'paragraph', content: [{ type: 'text', text: 'L5 甲、' }] },
+                          { type: 'orderedList', content: [
+                            { type: 'listItem', content: [
+                              { type: 'paragraph', content: [{ type: 'text', text: 'L6 (甲)' }] },
+                              { type: 'orderedList', content: [
+                                { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'L7 子、' }] }] },
+                                { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'L7 丑、' }] }] },
+                              ]},
+                            ]},
+                          ]},
+                        ]},
+                      ]},
+                    ]},
+                  ]},
+                ]},
+              ]},
+            ]},
+          ]},
+        ]},
+      ]},
+    ]
+  }
+
+  const loadResult6 = await page.evaluate((json) => {
+    try {
+      window.__tiptapEditor.commands.setContent(json)
+      return { loaded: true }
+    } catch (e) {
+      return { loaded: false, error: e.message }
+    }
+  }, testJSON6)
+
+  if (loadResult6.loaded) ok('7 層巢狀 JSON 載入成功')
+  else fail(`載入失敗：${loadResult6.error}`)
+
+  await sleep(500)
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '10-7-levels.png'), fullPage: true })
+
+  // 驗證 7 層巢狀結構
+  const level7Check = await page.evaluate(() => {
+    const pm = document.querySelector('.ProseMirror')
+    // 檢查各層 ol 的 counter 設定
+    const levels = []
+    let selector = 'ol'
+    for (let i = 1; i <= 7; i++) {
+      const el = pm.querySelector(selector)
+      if (!el) {
+        levels.push({ level: i, found: false })
+        break
+      }
+      const style = window.getComputedStyle(el)
+      const counterReset = style.counterReset || style.getPropertyValue('counter-reset')
+      const items = el.querySelectorAll(':scope > li')
+      levels.push({
+        level: i,
+        found: true,
+        counterReset,
+        itemCount: items.length,
+      })
+      selector += ' ol'
+    }
+
+    // 特別檢查第 7 層
+    const l7Ol = pm.querySelector('ol ol ol ol ol ol ol')
+    let l7Info = null
+    if (l7Ol) {
+      const l7Items = l7Ol.querySelectorAll(':scope > li')
+      const l7Style = window.getComputedStyle(l7Ol)
+      l7Info = {
+        found: true,
+        itemCount: l7Items.length,
+        counterReset: l7Style.counterReset || l7Style.getPropertyValue('counter-reset'),
+        texts: Array.from(l7Items).map(li => li.textContent.substring(0, 10)),
+      }
+    }
+
+    return { levels, l7Info }
+  })
+
+  console.log('  7 層結構:', JSON.stringify(level7Check.levels.map(l => ({ L: l.level, found: l.found }))))
+
+  if (level7Check.l7Info?.found) {
+    ok(`第 7 層 ol 存在，${level7Check.l7Info.itemCount} 項`)
+  } else {
+    fail('找不到第 7 層 ol')
+  }
+
+  if (level7Check.l7Info?.counterReset?.includes('list-L7')) {
+    ok('L7 counter-reset 包含 list-L7')
+  } else {
+    fail(`L7 counter-reset: ${level7Check.l7Info?.counterReset}`)
+  }
+
+  if (level7Check.l7Info?.itemCount === 2) {
+    ok('L7 有 2 個項目')
+  } else {
+    fail(`L7 項目數: ${level7Check.l7Info?.itemCount}`)
+  }
+
+  // ============================
   // 最終截圖
   // ============================
-  console.log('\n[10] 最終狀態截圖')
+  console.log('\n[11] 最終狀態截圖')
   // 載回完整公文做最終截圖
   await page.evaluate((json) => {
     window.__tiptapEditor.commands.setContent(json)

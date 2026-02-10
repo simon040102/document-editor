@@ -118,7 +118,7 @@
   font-weight: 500;
 }
 
-/* 巢狀列表的不同層級樣式 — 依公文規範 6 層 */
+/* 巢狀列表的不同層級樣式 — 依公文規範 7 層 */
 /* 第 2 層：(一) 半形括號 + 中文數字 */
 .ProseMirror ol ol {
   counter-reset: list-L2;
@@ -199,6 +199,22 @@
   width: 2.3em;
 }
 
+/* 第 7 層：子、 地支 + 全形頓號 */
+.ProseMirror ol ol ol ol ol ol ol {
+  counter-reset: list-L7;
+  padding-left: 2.5em;
+}
+
+.ProseMirror ol ol ol ol ol ol ol > li {
+  counter-increment: list-L7;
+}
+
+.ProseMirror ol ol ol ol ol ol ol > li::before {
+  content: counter(list-L7, cjk-earthly-branch) '\3001';
+  left: -2.5em;
+  width: 2.3em;
+}
+
 /* 重新編號 — counter-set 重置計數器（不建立新 scope，後續 ol 接續新值） */
 .ProseMirror ol[data-restart-numbering="true"] {
   counter-set: list-L1 0;
@@ -222,6 +238,10 @@
 
 .ProseMirror ol ol ol ol ol ol[data-restart-numbering="true"] {
   counter-set: list-L6 0;
+}
+
+.ProseMirror ol ol ol ol ol ol ol[data-restart-numbering="true"] {
+  counter-set: list-L7 0;
 }
 
 /* 列表項目樣式 */

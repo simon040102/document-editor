@@ -154,7 +154,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
               <strong>編號清單（公文格式）</strong>
               <ul>
                 <li>點擊工具列「編號清單」按鈕建立有序列表，自動使用中文數字編號（一、二、三...）</li>
-                <li>支援 6 層巢狀：一、&rarr; (一) &rarr; 1、&rarr; (1) &rarr; 甲、&rarr; (甲)，使用縮排按鈕切換層級</li>
+                <li>支援 7 層巢狀：一、&rarr; (一) &rarr; 1、&rarr; (1) &rarr; 甲、&rarr; (甲) &rarr; 子、，使用縮排按鈕切換層級</li>
                 <li>在空的列表項目上按 <kbd>Enter</kbd> 即可退出列表，回到一般段落</li>
                 <li>列表中斷後再次點擊「編號清單」，編號會自動接續（例：一、&rarr; 段落 &rarr; 二、）</li>
                 <li>如需重新從「一」開始，點擊「重新編號」按鈕（僅在列表內啟用）</li>
