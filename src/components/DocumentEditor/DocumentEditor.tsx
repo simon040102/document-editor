@@ -15,6 +15,10 @@ import { TableHeader } from '@tiptap/extension-table-header'
 import { FontFamily } from '@tiptap/extension-font-family'
 import Subscript from '@tiptap/extension-subscript'
 import Superscript from '@tiptap/extension-superscript'
+import { ListKeymap } from '@tiptap/extension-list-keymap'
+import FontSize from './extensions/FontSize'
+import LineHeight from './extensions/LineHeight'
+import TextIndent from './extensions/TextIndent'
 import { DocumentEditorProps } from './types/editor.types'
 import Toolbar from './Toolbar/Toolbar'
 import LinkBubbleMenu from './BubbleMenu/LinkBubbleMenu'
@@ -50,6 +54,9 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         types: ['textStyle'],
       }),
       Color,
+      FontSize,
+      LineHeight,
+      TextIndent,
       Highlight.configure({
         multicolor: true,
       }),
@@ -84,6 +91,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
           class: 'editor-table-header',
         },
       }),
+      ListKeymap,
     ],
     content,
     editable,
@@ -99,8 +107,10 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         onChange(JSON.stringify(json))
       }
     },
-    onCreate: () => {
+    onCreate: ({ editor }) => {
       setIsInitialized(true)
+      // 暴露 editor 實例到 window，供測試和外部存取
+      ;(window as unknown as Record<string, unknown>).__tiptapEditor = editor
     },
   })
 

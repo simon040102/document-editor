@@ -1,5 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
+import {
+  Bold, Italic, Underline as UnderlineIcon, Strikethrough, Superscript as SuperscriptIcon,
+  Subscript as SubscriptIcon, Type, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight,
+  AlignJustify, List, ListOrdered, IndentIncrease, IndentDecrease, Link2, ImageIcon, Table2,
+  TextQuote, Code, Minus, Undo2, Redo2, RemoveFormatting, Printer, FolderOpen,
+  UnfoldVertical, FoldVertical, MoveRight, MoveLeft, Maximize2, Minimize2,
+} from 'lucide-react'
 import { ToolbarProps, CHINESE_PUNCTUATIONS } from '../types/editor.types'
+import { LINE_HEIGHT_STEPS, DEFAULT_LINE_HEIGHT } from '../extensions/LineHeight'
+import { INDENT_STEP, MAX_INDENT } from '../extensions/TextIndent'
 import '../styles/toolbar.css'
 
 const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
@@ -12,6 +21,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   const [showImageModal, setShowImageModal] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
   const [wordCount, setWordCount] = useState({ characters: 0, words: 0 })
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const punctuationRef = useRef<HTMLDivElement>(null)
   const colorPickerRef = useRef<HTMLDivElement>(null)
@@ -118,7 +128,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     const printWindow = window.open('', '_blank', 'width=800,height=600')
 
     if (printWindow) {
-      // 寫入 HTML 內容和樣式
+      // 寫入 HTML 內容和樣式（依公文規範）
       printWindow.document.write(`
         <!DOCTYPE html>
         <html>
@@ -127,19 +137,27 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             <title>列印文件</title>
             <style>
               @page {
-                margin: 2cm;
+                size: A4;
+                margin: 2.5cm 2.5cm 2.5cm 4cm; /* 左側含裝訂線 2.5+1.5=4cm */
+
+                @bottom-center {
+                  content: counter(page);
+                  font-family: DFKai-SB, BiauKai, '標楷體', serif;
+                  font-size: 10pt;
+                }
               }
 
               body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                font-family: DFKai-SB, BiauKai, '標楷體', serif;
                 font-size: 12pt;
-                line-height: 1.6;
+                line-height: 1.5;
                 color: #000;
-                max-width: 800px;
-                margin: 0 auto;
+                text-align: justify;
+                margin: 0;
+                counter-reset: list-L1;
               }
 
-              h1 { font-size: 18pt; margin: 1em 0 0.5em; page-break-after: avoid; }
+              h1 { font-size: 20pt; margin: 1em 0 0.5em; page-break-after: avoid; }
               h2 { font-size: 16pt; margin: 0.8em 0 0.4em; page-break-after: avoid; }
               h3 { font-size: 14pt; margin: 0.6em 0 0.3em; page-break-after: avoid; }
               h4, h5, h6 { font-size: 12pt; margin: 0.5em 0 0.2em; page-break-after: avoid; }
@@ -148,15 +166,14 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
 
               ul, ol { padding-left: 2em; margin: 0.5em 0; }
 
-              /* 中文數字列表 */
+              /* 第 1 層：一、 中文數字 + 全形頓號 */
               ol {
                 list-style: none;
-                counter-reset: list-counter;
-                padding-left: 5em;
+                padding-left: 3.5em;
               }
 
               ol > li {
-                counter-increment: list-counter;
+                counter-increment: list-L1;
                 position: relative;
                 list-style: none;
               }
@@ -167,33 +184,83 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               }
 
               ol > li::before {
-                content: counter(list-counter, trad-chinese-informal) '、';
+                content: counter(list-L1, trad-chinese-informal) '\u3001';
                 position: absolute;
-                left: -5em;
-                width: 4.5em;
+                left: -3.5em;
+                width: 3.2em;
                 text-align: right;
                 color: #000;
                 font-weight: 500;
               }
 
+              /* 第 2 層：(一) 半形括號 + 中文數字 */
               ol ol {
-                counter-reset: list-counter;
-                padding-left: 4em;
-              }
-
-              ol ol > li::before {
-                content: '(' counter(list-counter, trad-chinese-informal) ')';
-                width: 3.5em;
-              }
-
-              ol ol ol {
-                counter-reset: list-counter;
+                counter-reset: list-L2;
                 padding-left: 3em;
               }
 
+              ol ol > li { counter-increment: list-L2; }
+
+              ol ol > li::before {
+                content: '(' counter(list-L2, trad-chinese-informal) ')';
+                left: -3em;
+                width: 2.8em;
+              }
+
+              /* 第 3 層：1、 阿拉伯數字 + 全形頓號 */
+              ol ol ol {
+                counter-reset: list-L3;
+                padding-left: 2em;
+              }
+
+              ol ol ol > li { counter-increment: list-L3; }
+
               ol ol ol > li::before {
-                content: counter(list-counter, decimal) '.';
-                width: 2.5em;
+                content: counter(list-L3, decimal) '\u3001';
+                left: -2em;
+                width: 1.8em;
+              }
+
+              /* 第 4 層：(1) 半形括號 + 阿拉伯數字 */
+              ol ol ol ol {
+                counter-reset: list-L4;
+                padding-left: 2em;
+              }
+
+              ol ol ol ol > li { counter-increment: list-L4; }
+
+              ol ol ol ol > li::before {
+                content: '(' counter(list-L4, decimal) ')';
+                left: -2em;
+                width: 1.8em;
+              }
+
+              /* 第 5 層：甲、 天干 + 全形頓號 */
+              ol ol ol ol ol {
+                counter-reset: list-L5;
+                padding-left: 2.5em;
+              }
+
+              ol ol ol ol ol > li { counter-increment: list-L5; }
+
+              ol ol ol ol ol > li::before {
+                content: counter(list-L5, cjk-heavenly-stem) '\u3001';
+                left: -2.5em;
+                width: 2.3em;
+              }
+
+              /* 第 6 層：(甲) 半形括號 + 天干 */
+              ol ol ol ol ol ol {
+                counter-reset: list-L6;
+                padding-left: 2.5em;
+              }
+
+              ol ol ol ol ol ol > li { counter-increment: list-L6; }
+
+              ol ol ol ol ol ol > li::before {
+                content: '(' counter(list-L6, cjk-heavenly-stem) ')';
+                left: -2.5em;
+                width: 2.3em;
               }
 
               li {
@@ -305,6 +372,18 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     }
   }
 
+  const toggleFullscreen = () => {
+    const editorEl = document.querySelector('.document-editor')
+    if (!editorEl) return
+
+    if (!isFullscreen) {
+      editorEl.classList.add('fullscreen')
+    } else {
+      editorEl.classList.remove('fullscreen')
+    }
+    setIsFullscreen(!isFullscreen)
+  }
+
   // 更多顏色選項
   const colors = [
     '#000000',
@@ -340,6 +419,17 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     '#FFA07A',
     '#E6E6FA',
   ]
+  const fontSizes = [
+    { label: '預設', value: '' },
+    { label: '10pt', value: '10pt' },
+    { label: '12pt', value: '12pt' },
+    { label: '14pt', value: '14pt' },
+    { label: '16pt', value: '16pt' },
+    { label: '18pt', value: '18pt' },
+    { label: '20pt', value: '20pt' },
+    { label: '24pt', value: '24pt' },
+  ]
+
   const fonts = [
     { label: '預設字體', value: 'inherit' },
     { label: '標楷體', value: 'DFKai-SB, BiauKai, 標楷體, serif' },
@@ -362,42 +452,42 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           className={editor.isActive('bold') ? 'is-active' : ''}
           title="粗體 (Ctrl+B)"
         >
-          <strong>B</strong>
+          <Bold size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={editor.isActive('italic') ? 'is-active' : ''}
           title="斜體 (Ctrl+I)"
         >
-          <em>I</em>
+          <Italic size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           className={editor.isActive('underline') ? 'is-active' : ''}
           title="底線 (Ctrl+U)"
         >
-          <u>U</u>
+          <UnderlineIcon size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleStrike().run()}
           className={editor.isActive('strike') ? 'is-active' : ''}
           title="刪除線"
         >
-          <s>S</s>
+          <Strikethrough size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleSuperscript().run()}
           className={editor.isActive('superscript') ? 'is-active' : ''}
           title="上標 (x²)"
         >
-          x<sup>2</sup>
+          <SuperscriptIcon size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleSubscript().run()}
           className={editor.isActive('subscript') ? 'is-active' : ''}
           title="下標 (H₂O)"
         >
-          x<sub>2</sub>
+          <SubscriptIcon size={16} />
         </button>
       </div>
 
@@ -453,7 +543,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             title="字體"
             className="font-button"
           >
-            字
+            <Type size={16} />
           </button>
           {showFontPicker && (
             <div className="font-picker-panel">
@@ -480,6 +570,30 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
         </div>
       </div>
 
+      {/* 字級選擇 */}
+      <div className="toolbar-group">
+        <select
+          onChange={(e) => {
+            const size = e.target.value
+            if (size) {
+              editor.chain().focus().setFontSize(size).run()
+            } else {
+              editor.chain().focus().unsetFontSize().run()
+            }
+            e.target.blur()
+          }}
+          value={editor.getAttributes('textStyle').fontSize || ''}
+          className="font-size-select"
+          title="字級"
+        >
+          {fontSizes.map((size) => (
+            <option key={size.value} value={size.value}>
+              {size.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="toolbar-divider"></div>
 
       {/* 文字顏色和螢光筆 */}
@@ -490,7 +604,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             title="文字顏色"
             className="color-button"
           >
-            A
+            <Palette size={16} />
           </button>
           {showColorPicker && (
             <div className="color-picker-panel">
@@ -524,7 +638,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             title="螢光筆"
             className="highlight-button"
           >
-            ⬛
+            <Highlighter size={16} />
           </button>
           {showHighlightPicker && (
             <div className="color-picker-panel">
@@ -556,35 +670,35 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
 
       <div className="toolbar-divider"></div>
 
-      {/* 對齊方式 - 改用更清楚的圖示 */}
+      {/* 對齊方式 */}
       <div className="toolbar-group">
         <button
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
           className={editor.isActive({ textAlign: 'left' }) ? 'is-active' : ''}
           title="靠左對齊"
         >
-          <span className="align-icon align-left">☰</span>
+          <AlignLeft size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
           className={editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''}
           title="置中對齊"
         >
-          <span className="align-icon align-center">☰</span>
+          <AlignCenter size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
           className={editor.isActive({ textAlign: 'right' }) ? 'is-active' : ''}
           title="靠右對齊"
         >
-          <span className="align-icon align-right">☰</span>
+          <AlignRight size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('justify').run()}
           className={editor.isActive({ textAlign: 'justify' }) ? 'is-active' : ''}
           title="兩端對齊"
         >
-          <span className="align-icon align-justify">☰</span>
+          <AlignJustify size={16} />
         </button>
       </div>
 
@@ -597,14 +711,14 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           className={editor.isActive('bulletList') ? 'is-active' : ''}
           title="項目符號"
         >
-          •
+          <List size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={editor.isActive('orderedList') ? 'is-active' : ''}
           title="編號清單（中文數字）"
         >
-          一、
+          <ListOrdered size={16} />
         </button>
       </div>
 
@@ -617,14 +731,78 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           disabled={!editor.can().sinkListItem('listItem')}
           title="增加縮排（往右）"
         >
-          →
+          <IndentIncrease size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().liftListItem('listItem').run()}
           disabled={!editor.can().liftListItem('listItem')}
           title="減少縮排（往左）"
         >
-          ←
+          <IndentDecrease size={16} />
+        </button>
+      </div>
+
+      <div className="toolbar-divider"></div>
+
+      {/* 首行縮排 */}
+      <div className="toolbar-group">
+        <button
+          onClick={() => {
+            const { textIndent } = editor.getAttributes('paragraph')
+            const current = textIndent ? parseFloat(textIndent) : 0
+            const next = Math.min(current + INDENT_STEP, MAX_INDENT)
+            editor.chain().focus().setTextIndent(`${next}em`).run()
+          }}
+          title="增加首行縮排"
+        >
+          <MoveRight size={16} />
+        </button>
+        <button
+          onClick={() => {
+            const { textIndent } = editor.getAttributes('paragraph')
+            const current = textIndent ? parseFloat(textIndent) : 0
+            const next = Math.max(current - INDENT_STEP, 0)
+            if (next === 0) {
+              editor.chain().focus().unsetTextIndent().run()
+            } else {
+              editor.chain().focus().setTextIndent(`${next}em`).run()
+            }
+          }}
+          title="減少首行縮排"
+        >
+          <MoveLeft size={16} />
+        </button>
+      </div>
+
+      <div className="toolbar-divider"></div>
+
+      {/* 行距 */}
+      <div className="toolbar-group">
+        <button
+          onClick={() => {
+            const { lineHeight } = editor.getAttributes('paragraph')
+            const current = lineHeight ? parseFloat(lineHeight) : DEFAULT_LINE_HEIGHT
+            const nextIndex = LINE_HEIGHT_STEPS.findIndex((s) => s > current)
+            if (nextIndex !== -1) {
+              editor.chain().focus().setLineHeight(String(LINE_HEIGHT_STEPS[nextIndex])).run()
+            }
+          }}
+          title="增加行距"
+        >
+          <UnfoldVertical size={16} />
+        </button>
+        <button
+          onClick={() => {
+            const { lineHeight } = editor.getAttributes('paragraph')
+            const current = lineHeight ? parseFloat(lineHeight) : DEFAULT_LINE_HEIGHT
+            const candidates = LINE_HEIGHT_STEPS.filter((s) => s < current)
+            if (candidates.length > 0) {
+              editor.chain().focus().setLineHeight(String(candidates[candidates.length - 1])).run()
+            }
+          }}
+          title="減少行距"
+        >
+          <FoldVertical size={16} />
         </button>
       </div>
 
@@ -697,30 +875,30 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
       {/* 進階功能 */}
       <div className="toolbar-group">
         <button onClick={() => setShowLinkModal(true)} title="插入連結">
-          🔗
+          <Link2 size={16} />
         </button>
         <button onClick={addImage} title="插入圖片">
-          🖼️
+          <ImageIcon size={16} />
         </button>
         <button onClick={insertTable} title="插入表格">
-          📊
+          <Table2 size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           className={editor.isActive('blockquote') ? 'is-active' : ''}
           title="引用"
         >
-          "
+          <TextQuote size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           className={editor.isActive('codeBlock') ? 'is-active' : ''}
           title="程式碼區塊"
         >
-          &lt;/&gt;
+          <Code size={16} />
         </button>
         <button onClick={() => editor.chain().focus().setHorizontalRule().run()} title="分隔線">
-          —
+          <Minus size={16} />
         </button>
       </div>
 
@@ -733,20 +911,23 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           disabled={!editor.can().undo()}
           title="復原 (Ctrl+Z)"
         >
-          ↶
+          <Undo2 size={16} />
         </button>
         <button
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().redo()}
           title="重做 (Ctrl+Y)"
         >
-          ↷
+          <Redo2 size={16} />
         </button>
         <button onClick={() => editor.chain().focus().unsetAllMarks().run()} title="清除格式">
-          ✗
+          <RemoveFormatting size={16} />
         </button>
         <button onClick={handlePrint} title="列印 (Ctrl+P)">
-          🖨️
+          <Printer size={16} />
+        </button>
+        <button onClick={toggleFullscreen} title={isFullscreen ? '退出全視窗' : '全視窗'}>
+          {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
         </button>
       </div>
 
@@ -800,7 +981,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               <div className="image-divider">或</div>
               <div className="image-option">
                 <button onClick={insertImageFromFile} className="file-upload-button">
-                  📁 從電腦選擇圖片
+                  <FolderOpen size={16} style={{ marginRight: 6, verticalAlign: 'middle' }} /> 從電腦選擇圖片
                 </button>
               </div>
             </div>

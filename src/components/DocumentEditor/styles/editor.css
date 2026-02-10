@@ -24,9 +24,11 @@
   outline: none;
   min-height: 400px;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.5;
   color: #333;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: DFKai-SB, BiauKai, '標楷體', serif;
+  text-align: justify;
+  counter-reset: list-L1;
 }
 
 .ProseMirror:focus {
@@ -89,15 +91,14 @@
   margin: 0.5em 0;
 }
 
-/* 有序列表使用中文數字 */
+/* 有序列表使用中文數字 — 計數器延續跨 ol 區塊 */
 .ProseMirror ol {
   list-style: none;
-  counter-reset: list-counter;
-  padding-left: 5em;
+  padding-left: 3.5em;
 }
 
 .ProseMirror ol > li {
-  counter-increment: list-counter;
+  counter-increment: list-L1;
   position: relative;
   list-style: none;
 }
@@ -108,34 +109,94 @@
 }
 
 .ProseMirror ol > li::before {
-  content: counter(list-counter, trad-chinese-informal) '、';
+  content: counter(list-L1, trad-chinese-informal) '、';
   position: absolute;
-  left: -5em;
-  width: 4.5em;
+  left: -3.5em;
+  width: 3.2em;
   text-align: right;
   color: #495057;
   font-weight: 500;
 }
 
-/* 巢狀列表的不同層級樣式 */
+/* 巢狀列表的不同層級樣式 — 依公文規範 6 層 */
+/* 第 2 層：(一) 半形括號 + 中文數字 */
 .ProseMirror ol ol {
-  counter-reset: list-counter;
-  padding-left: 4em;
-}
-
-.ProseMirror ol ol > li::before {
-  content: '(' counter(list-counter, trad-chinese-informal) ')';
-  width: 3.5em;
-}
-
-.ProseMirror ol ol ol {
-  counter-reset: list-counter;
+  counter-reset: list-L2;
   padding-left: 3em;
 }
 
+.ProseMirror ol ol > li {
+  counter-increment: list-L2;
+}
+
+.ProseMirror ol ol > li::before {
+  content: '(' counter(list-L2, trad-chinese-informal) ')';
+  left: -3em;
+  width: 2.8em;
+}
+
+/* 第 3 層：1、 阿拉伯數字 + 全形頓號 */
+.ProseMirror ol ol ol {
+  counter-reset: list-L3;
+  padding-left: 2em;
+}
+
+.ProseMirror ol ol ol > li {
+  counter-increment: list-L3;
+}
+
 .ProseMirror ol ol ol > li::before {
-  content: counter(list-counter, decimal) '.';
-  width: 2.5em;
+  content: counter(list-L3, decimal) '\3001';
+  left: -2em;
+  width: 1.8em;
+}
+
+/* 第 4 層：(1) 半形括號 + 阿拉伯數字 */
+.ProseMirror ol ol ol ol {
+  counter-reset: list-L4;
+  padding-left: 2em;
+}
+
+.ProseMirror ol ol ol ol > li {
+  counter-increment: list-L4;
+}
+
+.ProseMirror ol ol ol ol > li::before {
+  content: '(' counter(list-L4, decimal) ')';
+  left: -2em;
+  width: 1.8em;
+}
+
+/* 第 5 層：甲、 天干 + 全形頓號 */
+.ProseMirror ol ol ol ol ol {
+  counter-reset: list-L5;
+  padding-left: 2.5em;
+}
+
+.ProseMirror ol ol ol ol ol > li {
+  counter-increment: list-L5;
+}
+
+.ProseMirror ol ol ol ol ol > li::before {
+  content: counter(list-L5, cjk-heavenly-stem) '\3001';
+  left: -2.5em;
+  width: 2.3em;
+}
+
+/* 第 6 層：(甲) 半形括號 + 天干 */
+.ProseMirror ol ol ol ol ol ol {
+  counter-reset: list-L6;
+  padding-left: 2.5em;
+}
+
+.ProseMirror ol ol ol ol ol ol > li {
+  counter-increment: list-L6;
+}
+
+.ProseMirror ol ol ol ol ol ol > li::before {
+  content: '(' counter(list-L6, cjk-heavenly-stem) ')';
+  left: -2.5em;
+  width: 2.3em;
 }
 
 /* 列表項目樣式 */
@@ -331,8 +392,31 @@
   background: #555;
 }
 
+/* ==================== 全視窗模式 ==================== */
+.document-editor.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  border-radius: 0;
+  border: none;
+  min-height: unset;
+}
+
+.document-editor.fullscreen .editor-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
 /* ==================== 列印樣式 ==================== */
 @media print {
+  @page {
+    size: A4;
+    margin: 2.5cm 2.5cm 2.5cm 4cm; /* 左側含裝訂線 2.5+1.5=4cm */
+  }
+
   /* 隱藏工具列 */
   .toolbar {
     display: none !important;
@@ -364,13 +448,15 @@
   .ProseMirror {
     min-height: auto;
     font-size: 12pt;
-    line-height: 1.6;
+    line-height: 1.5;
     color: #000;
+    font-family: DFKai-SB, BiauKai, '標楷體', serif;
+    text-align: justify;
   }
 
   /* 標題列印樣式 */
   .ProseMirror h1 {
-    font-size: 18pt;
+    font-size: 20pt;
     page-break-after: avoid;
     break-after: avoid;
   }
