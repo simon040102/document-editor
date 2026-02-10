@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Superscript as SuperscriptIcon,
   Subscript as SubscriptIcon, Type, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight,
-  AlignJustify, List, ListOrdered, IndentIncrease, IndentDecrease, Link2, ImageIcon, Table2,
+  AlignJustify, List, ListOrdered, ListRestart, IndentIncrease, IndentDecrease, Link2, ImageIcon, Table2,
   TextQuote, Code, Minus, Undo2, Redo2, RemoveFormatting, Printer, FolderOpen,
   UnfoldVertical, FoldVertical, MoveRight, MoveLeft, Maximize2, Minimize2,
 } from 'lucide-react'
@@ -268,6 +268,14 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
                 list-style: none;
                 page-break-inside: avoid;
               }
+
+              /* 重新編號 */
+              ol[data-restart-numbering="true"] { counter-set: list-L1 0; }
+              ol ol[data-restart-numbering="true"] { counter-set: list-L2 0; }
+              ol ol ol[data-restart-numbering="true"] { counter-set: list-L3 0; }
+              ol ol ol ol[data-restart-numbering="true"] { counter-set: list-L4 0; }
+              ol ol ol ol ol[data-restart-numbering="true"] { counter-set: list-L5 0; }
+              ol ol ol ol ol ol[data-restart-numbering="true"] { counter-set: list-L6 0; }
 
               blockquote {
                 border-left: 2pt solid #666;
@@ -719,6 +727,14 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           title="編號清單（中文數字）"
         >
           <ListOrdered size={16} />
+        </button>
+        <button
+          onClick={() => editor.chain().focus().toggleRestartNumbering().run()}
+          disabled={!editor.isActive('orderedList')}
+          className={editor.getAttributes('orderedList').restartNumbering ? 'is-active' : ''}
+          title="重新編號（從一開始）"
+        >
+          <ListRestart size={16} />
         </button>
       </div>
 

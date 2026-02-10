@@ -19,6 +19,7 @@ import { ListKeymap } from '@tiptap/extension-list-keymap'
 import FontSize from './extensions/FontSize'
 import LineHeight from './extensions/LineHeight'
 import TextIndent from './extensions/TextIndent'
+import ListNumbering from './extensions/ListNumbering'
 import { DocumentEditorProps } from './types/editor.types'
 import Toolbar from './Toolbar/Toolbar'
 import LinkBubbleMenu from './BubbleMenu/LinkBubbleMenu'
@@ -92,6 +93,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         },
       }),
       ListKeymap,
+      ListNumbering,
     ],
     content,
     editable,

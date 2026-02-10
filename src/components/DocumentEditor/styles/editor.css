@@ -199,6 +199,31 @@
   width: 2.3em;
 }
 
+/* 重新編號 — counter-set 重置計數器（不建立新 scope，後續 ol 接續新值） */
+.ProseMirror ol[data-restart-numbering="true"] {
+  counter-set: list-L1 0;
+}
+
+.ProseMirror ol ol[data-restart-numbering="true"] {
+  counter-set: list-L2 0;
+}
+
+.ProseMirror ol ol ol[data-restart-numbering="true"] {
+  counter-set: list-L3 0;
+}
+
+.ProseMirror ol ol ol ol[data-restart-numbering="true"] {
+  counter-set: list-L4 0;
+}
+
+.ProseMirror ol ol ol ol ol[data-restart-numbering="true"] {
+  counter-set: list-L5 0;
+}
+
+.ProseMirror ol ol ol ol ol ol[data-restart-numbering="true"] {
+  counter-set: list-L6 0;
+}
+
 /* 列表項目樣式 */
 .ProseMirror ol > li {
   list-style: none;

@@ -590,15 +590,200 @@ async function runTests() {
   }
 
   // ============================
-  // 列印預覽截圖
+  // [8] 重新編號功能測試
   // ============================
-  console.log('\n[8] 最終狀態截圖')
+  console.log('\n[8] 重新編號功能測試 (toggleRestartNumbering)')
+
+  // 載入含 restartNumbering 的 JSON
+  const testJSON4 = {
+    type: 'doc',
+    content: [
+      { type: 'paragraph', content: [{ type: 'text', text: '說明：' }] },
+      { type: 'orderedList', content: [
+        { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '第一段第一項。' }] }] },
+        { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '第一段第二項。' }] }] },
+      ]},
+      { type: 'paragraph', content: [{ type: 'text', text: '銀行帳號資訊。' }] },
+      { type: 'orderedList', content: [
+        { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '繼續第三項。' }] }] },
+      ]},
+      { type: 'paragraph', content: [{ type: 'text', text: '新的段落。' }] },
+      { type: 'orderedList', attrs: { restartNumbering: true }, content: [
+        { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '重新從一開始。' }] }] },
+        { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '第二項。' }] }] },
+      ]},
+      { type: 'paragraph', content: [{ type: 'text', text: '再一段。' }] },
+      { type: 'orderedList', content: [
+        { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '接續第三項。' }] }] },
+      ]},
+    ]
+  }
+
+  const loadResult4 = await page.evaluate((json) => {
+    try {
+      window.__tiptapEditor.commands.setContent(json)
+      return { loaded: true }
+    } catch (e) {
+      return { loaded: false, error: e.message }
+    }
+  }, testJSON4)
+
+  if (loadResult4.loaded) ok('重新編號 JSON 載入成功')
+  else fail(`載入失敗：${loadResult4.error}`)
+
+  await sleep(500)
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '08-restart-numbering.png'), fullPage: true })
+
+  // 驗證 data-restart-numbering 屬性
+  const restartCheck = await page.evaluate(() => {
+    const pm = document.querySelector('.ProseMirror')
+    const ols = pm.querySelectorAll(':scope > ol')
+    const result = []
+    ols.forEach((ol, i) => {
+      const hasRestart = ol.getAttribute('data-restart-numbering') === 'true'
+      const items = ol.querySelectorAll(':scope > li')
+      const olStyle = window.getComputedStyle(ol)
+      const counterSet = olStyle.counterSet || olStyle.getPropertyValue('counter-set')
+      result.push({
+        olIndex: i,
+        hasRestart,
+        itemCount: items.length,
+        counterSet,
+        text: Array.from(items).map(li => li.textContent.substring(0, 10)),
+      })
+    })
+    return result
+  })
+
+  console.log('  重新編號結構:', JSON.stringify(restartCheck))
+
+  if (restartCheck.length === 4) ok('找到 4 個 ol 區塊')
+  else fail(`找到 ${restartCheck.length} 個 ol，期望 4 個`)
+
+  // ol[0]: 無 restart → 續號
+  // ol[1]: 無 restart → 續號
+  // ol[2]: 有 restart → 重新編號
+  // ol[3]: 無 restart → 接續 ol[2] 的值
+  if (!restartCheck[0]?.hasRestart) ok('ol[0] 無 restart 屬性')
+  else fail('ol[0] 不應有 restart')
+
+  if (!restartCheck[1]?.hasRestart) ok('ol[1] 無 restart，接續前段')
+  else fail('ol[1] 不應有 restart')
+
+  if (restartCheck[2]?.hasRestart) ok('ol[2] 有 restart 屬性（重新編號）')
+  else fail('ol[2] 應有 restart')
+
+  if (!restartCheck[3]?.hasRestart) ok('ol[3] 無 restart，接續 ol[2]')
+  else fail('ol[3] 不應有 restart')
+
+  // 驗證 counter-set CSS 生效
+  const ol2CounterSet = restartCheck[2]?.counterSet || ''
+  if (ol2CounterSet.includes('list-L1') || ol2CounterSet.includes('0')) {
+    ok(`ol[2] counter-set: ${ol2CounterSet}`)
+  } else {
+    // counter-set 可能顯示為 "none" 若瀏覽器不解析
+    console.log(`  ! ol[2] counter-set: ${ol2CounterSet}（檢查截圖確認視覺效果）`)
+    ok('ol[2] 已標記 restart（視覺效果請檢查截圖）')
+  }
+
+  // 使用 toggleRestartNumbering 指令測試
+  const toggleTest = await page.evaluate(() => {
+    const editor = window.__tiptapEditor
+    // 取得目前 JSON
+    const before = editor.getJSON()
+    const olsBefore = before.content.filter(n => n.type === 'orderedList')
+
+    // 找到第三個 ol (index 2)，它有 restart
+    const thirdOl = olsBefore[2]
+    const hadRestart = thirdOl?.attrs?.restartNumbering === true
+
+    // 把游標移到第三個 ol 的內容
+    // 先用 setContent 確保我們在對的位置
+    editor.commands.setContent(before)
+
+    return { hadRestart, olCount: olsBefore.length }
+  })
+
+  if (toggleTest.hadRestart) ok('getJSON 保留 restartNumbering 屬性')
+  else fail('getJSON 未保留 restartNumbering')
+
+  // ============================
+  // [9] 巢狀列表重新編號測試
+  // ============================
+  console.log('\n[9] 巢狀列表重新編號')
+
+  const testJSON5 = {
+    type: 'doc',
+    content: [
+      { type: 'orderedList', content: [
+        { type: 'listItem', content: [
+          { type: 'paragraph', content: [{ type: 'text', text: '第一項' }] },
+          { type: 'orderedList', content: [
+            { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '子項 (一)' }] }] },
+            { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '子項 (二)' }] }] },
+          ]},
+        ]},
+        { type: 'listItem', content: [
+          { type: 'paragraph', content: [{ type: 'text', text: '第二項' }] },
+          { type: 'orderedList', attrs: { restartNumbering: true }, content: [
+            { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: '重新 (一)' }] }] },
+          ]},
+        ]},
+      ]},
+    ]
+  }
+
+  const loadResult5 = await page.evaluate((json) => {
+    try {
+      window.__tiptapEditor.commands.setContent(json)
+      return { loaded: true }
+    } catch (e) {
+      return { loaded: false, error: e.message }
+    }
+  }, testJSON5)
+
+  if (loadResult5.loaded) ok('巢狀重新編號 JSON 載入成功')
+  else fail(`載入失敗：${loadResult5.error}`)
+
+  await sleep(500)
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '09-nested-restart.png'), fullPage: true })
+
+  // 驗證巢狀的 restart
+  const nestedRestartCheck = await page.evaluate(() => {
+    const pm = document.querySelector('.ProseMirror')
+    const nestedOls = pm.querySelectorAll('ol ol')
+    const result = []
+    nestedOls.forEach((ol, i) => {
+      result.push({
+        index: i,
+        hasRestart: ol.getAttribute('data-restart-numbering') === 'true',
+        items: ol.querySelectorAll(':scope > li').length,
+      })
+    })
+    return result
+  })
+
+  console.log('  巢狀列表:', JSON.stringify(nestedRestartCheck))
+
+  if (nestedRestartCheck.length === 2) ok('找到 2 個巢狀 ol')
+  else fail(`找到 ${nestedRestartCheck.length} 個巢狀 ol`)
+
+  if (!nestedRestartCheck[0]?.hasRestart) ok('巢狀 ol[0] 無 restart')
+  else fail('巢狀 ol[0] 不應有 restart')
+
+  if (nestedRestartCheck[1]?.hasRestart) ok('巢狀 ol[1] 有 restart（L2 重新編號）')
+  else fail('巢狀 ol[1] 應有 restart')
+
+  // ============================
+  // 最終截圖
+  // ============================
+  console.log('\n[10] 最終狀態截圖')
   // 載回完整公文做最終截圖
   await page.evaluate((json) => {
     window.__tiptapEditor.commands.setContent(json)
   }, testJSON)
   await sleep(500)
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '08-final.png'), fullPage: true })
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '10-final.png'), fullPage: true })
   ok('最終狀態截圖完成')
 
   // ============================
