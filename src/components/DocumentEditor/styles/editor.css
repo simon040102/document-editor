@@ -417,6 +417,70 @@
   background: #555;
 }
 
+/* ==================== 操作說明 Footer ==================== */
+.editor-footer {
+  border-top: 1px solid #e0e0e0;
+  background: #fafafa;
+  padding: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.editor-footer details {
+  margin: 0;
+}
+
+.editor-footer summary {
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #888;
+  user-select: none;
+}
+
+.editor-footer summary:hover {
+  color: #555;
+  background: #f0f0f0;
+}
+
+.footer-guide {
+  padding: 8px 16px 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.guide-section strong {
+  display: block;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.guide-section ul {
+  margin: 0;
+  padding-left: 1.2em;
+  list-style: disc;
+}
+
+.guide-section li {
+  margin: 2px 0;
+  line-height: 1.5;
+  font-size: 12px;
+}
+
+.guide-section kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  font-size: 11px;
+  font-family: inherit;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 #bbb;
+  line-height: 1.4;
+}
+
 /* ==================== 全視窗模式 ==================== */
 .document-editor.fullscreen {
   position: fixed;
@@ -442,8 +506,9 @@
     margin: 2.5cm 2.5cm 2.5cm 4cm; /* 左側含裝訂線 2.5+1.5=4cm */
   }
 
-  /* 隱藏工具列 */
-  .toolbar {
+  /* 隱藏工具列與操作說明 */
+  .toolbar,
+  .editor-footer {
     display: none !important;
   }
 
