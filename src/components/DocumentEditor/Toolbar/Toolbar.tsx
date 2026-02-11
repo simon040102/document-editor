@@ -24,6 +24,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
   const [wordCount, setWordCount] = useState({ characters: 0, words: 0 })
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
+  const [punctuationAlign, setPunctuationAlign] = useState<'left' | 'right'>('left')
 
   const punctuationRef = useRef<HTMLDivElement>(null)
   const colorPickerRef = useRef<HTMLDivElement>(null)
@@ -896,14 +897,21 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
       <div className="toolbar-group">
         <div className="punctuation-wrapper" ref={punctuationRef}>
           <button
-            onClick={() => setShowPunctuationPanel(!showPunctuationPanel)}
+            onClick={() => {
+              if (!showPunctuationPanel && punctuationRef.current) {
+                const rect = punctuationRef.current.getBoundingClientRect()
+                const panelWidth = 320
+                setPunctuationAlign(rect.left + panelWidth > window.innerWidth ? 'right' : 'left')
+              }
+              setShowPunctuationPanel(!showPunctuationPanel)
+            }}
             className="punctuation-trigger"
             title="中文標點符號"
           >
             、。
           </button>
           {showPunctuationPanel && (
-            <div className="punctuation-panel">
+            <div className="punctuation-panel" style={punctuationAlign === 'right' ? { right: 0, left: 'auto' } : { left: 0, right: 'auto' }}>
               <div className="punctuation-section">
                 <div className="punctuation-label">常用標點</div>
                 <div className="punctuation-grid">
