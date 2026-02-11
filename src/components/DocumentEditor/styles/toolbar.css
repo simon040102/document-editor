@@ -112,6 +112,29 @@
   box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
+/* 紙張大小選擇器 */
+.paper-size-select {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 14px;
+  color: #495057;
+  cursor: pointer;
+  min-width: 70px;
+  height: 32px;
+}
+
+.paper-size-select:hover {
+  border-color: #adb5bd;
+}
+
+.paper-size-select:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
 /* 顏色選擇器 */
 .color-picker-wrapper {
   position: relative;

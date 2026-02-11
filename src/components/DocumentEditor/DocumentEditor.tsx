@@ -21,7 +21,7 @@ import LineHeight from './extensions/LineHeight'
 import TextIndent from './extensions/TextIndent'
 import ListNumbering from './extensions/ListNumbering'
 import WordPaste from './extensions/WordPaste'
-import { DocumentEditorProps } from './types/editor.types'
+import { DocumentEditorProps, PaperSize, Orientation, PAPER_DIMENSIONS } from './types/editor.types'
 import Toolbar from './Toolbar/Toolbar'
 import LinkBubbleMenu from './BubbleMenu/LinkBubbleMenu'
 import TableBubbleMenu from './BubbleMenu/TableBubbleMenu'
@@ -36,6 +36,17 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   className = '',
 }) => {
   const [isInitialized, setIsInitialized] = React.useState(false)
+  const [paperSize, setPaperSize] = React.useState<PaperSize>('A4')
+  const [orientation, setOrientation] = React.useState<Orientation>('portrait')
+
+  const dim = PAPER_DIMENSIONS[paperSize]
+  const paperW = orientation === 'portrait' ? dim.width : dim.height
+  const paperH = orientation === 'portrait' ? dim.height : dim.width
+  const MM_TO_PX = 3.7795
+  const paperStyle = {
+    '--paper-width': `${Math.round(paperW * MM_TO_PX)}px`,
+    '--paper-min-height': `${Math.round(paperH * MM_TO_PX)}px`,
+  } as React.CSSProperties
 
   const editor = useEditor({
     extensions: [
@@ -141,8 +152,14 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   }
 
   return (
-    <div className={`document-editor ${className}`}>
-      <Toolbar editor={editor} />
+    <div className={`document-editor ${className}`} style={paperStyle}>
+      <Toolbar
+        editor={editor}
+        paperSize={paperSize}
+        orientation={orientation}
+        onPaperSizeChange={setPaperSize}
+        onOrientationChange={setOrientation}
+      />
       <div className="editor-container">
         <EditorContent editor={editor} placeholder={placeholder} />
         <LinkBubbleMenu editor={editor} />

@@ -6,12 +6,12 @@ import {
   TextQuote, Code, Minus, Undo2, Redo2, RemoveFormatting, Printer, FolderOpen,
   UnfoldVertical, FoldVertical, MoveRight, MoveLeft, Maximize2, Minimize2,
 } from 'lucide-react'
-import { ToolbarProps, CHINESE_PUNCTUATIONS } from '../types/editor.types'
+import { ToolbarProps, CHINESE_PUNCTUATIONS, PAPER_DIMENSIONS, PAPER_CSS_SIZE, PaperSize } from '../types/editor.types'
 import { LINE_HEIGHT_STEPS, DEFAULT_LINE_HEIGHT } from '../extensions/LineHeight'
 import { INDENT_STEP, MAX_INDENT } from '../extensions/TextIndent'
 import '../styles/toolbar.css'
 
-const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPaperSizeChange, onOrientationChange }) => {
   const [showPunctuationPanel, setShowPunctuationPanel] = useState(false)
   const [showLinkModal, setShowLinkModal] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
@@ -124,6 +124,31 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     // 獲取編輯器的 HTML 內容
     const content = editor.getHTML()
 
+    // 計算 @page size
+    const cssSize = PAPER_CSS_SIZE[paperSize]
+    const pageSize = orientation === 'landscape' ? `${cssSize} landscape` : cssSize
+
+    // 根據方向決定邊距（橫向時裝訂線在上方）
+    const pageMargin = orientation === 'landscape'
+      ? '0.5cm 2cm 2cm 2cm'   // 上方裝訂線
+      : '2cm 2cm 2cm 0.5cm'    // 左側裝訂線
+
+    const bodyPadding = orientation === 'landscape'
+      ? 'padding-top: 3.5cm;'
+      : 'padding-left: 3.5cm;'
+
+    const bindingLineStyle = orientation === 'landscape'
+      ? `position: fixed; left: 0; right: 0; top: 0; height: 1.2cm;
+         display: flex; flex-direction: row; align-items: center; justify-content: center;
+         gap: 2cm; font-size: 14pt; color: #888; z-index: 10;`
+      : `position: fixed; left: 0; top: 0; bottom: 0; width: 1.2cm;
+         display: flex; flex-direction: column; align-items: center; justify-content: center;
+         gap: 2cm; font-size: 14pt; color: #888; z-index: 10;`
+
+    const bindingLineAfter = orientation === 'landscape'
+      ? `content: ''; position: absolute; bottom: 0; left: 8%; right: 8%; border-bottom: 1px dashed #bbb;`
+      : `content: ''; position: absolute; right: 0; top: 8%; bottom: 8%; border-right: 1px dashed #bbb;`
+
     // 創建一個新視窗用於列印
     const printWindow = window.open('', '_blank', 'width=800,height=600')
 
@@ -137,8 +162,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             <title>列印文件</title>
             <style>
               @page {
-                size: A4;
-                margin: 2cm 2cm 2cm 0.5cm;
+                size: ${pageSize};
+                margin: ${pageMargin};
 
                 @bottom-center {
                   content: counter(page);
@@ -154,34 +179,17 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
                 color: #000;
                 text-align: justify;
                 margin: 0;
-                padding-left: 3.5cm;
+                ${bodyPadding}
                 counter-reset: list-L1;
               }
 
               /* 裝訂線 */
               .binding-line {
-                position: fixed;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                width: 1.2cm;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 2cm;
-                font-size: 14pt;
-                color: #888;
-                z-index: 10;
+                ${bindingLineStyle}
               }
 
               .binding-line::after {
-                content: '';
-                position: absolute;
-                right: 0;
-                top: 8%;
-                bottom: 8%;
-                border-right: 1px dashed #bbb;
+                ${bindingLineAfter}
               }
 
               @media screen {
@@ -992,6 +1000,32 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
         </button>
         <button onClick={toggleFullscreen} title={isFullscreen ? '退出全視窗' : '全視窗'}>
           {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+        </button>
+      </div>
+
+      <div className="toolbar-divider"></div>
+
+      {/* 紙張設定 */}
+      <div className="toolbar-group">
+        <select
+          value={paperSize}
+          onChange={(e) => {
+            onPaperSizeChange(e.target.value as PaperSize)
+            e.target.blur()
+          }}
+          className="paper-size-select"
+          title="紙張大小"
+        >
+          {Object.entries(PAPER_DIMENSIONS).map(([key, dim]) => (
+            <option key={key} value={key}>{dim.label}</option>
+          ))}
+        </select>
+        <button
+          onClick={() => onOrientationChange(orientation === 'portrait' ? 'landscape' : 'portrait')}
+          className={orientation === 'landscape' ? 'is-active' : ''}
+          title={orientation === 'portrait' ? '切換為橫向' : '切換為直向'}
+        >
+          {orientation === 'portrait' ? '直' : '橫'}
         </button>
       </div>
 
