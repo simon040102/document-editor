@@ -131,8 +131,8 @@
 
 .ProseMirror ol ol > li::before {
   content: '(' counter(list-L2, trad-chinese-informal) ')';
-  left: -1.5em;
-  width: 1.5em;
+  left: -2em;
+  width: 2em;
 }
 
 /* 第 3 層：1、 阿拉伯數字 + 全形頓號 */
@@ -163,8 +163,8 @@
 
 .ProseMirror ol ol ol ol > li::before {
   content: '(' counter(list-L4, decimal) ')';
-  left: -1.2em;
-  width: 1.2em;
+  left: -1.5em;
+  width: 1.5em;
 }
 
 /* 第 5 層：甲、 天干 + 全形頓號 */
@@ -195,8 +195,8 @@
 
 .ProseMirror ol ol ol ol ol ol > li::before {
   content: '(' counter(list-L6, cjk-heavenly-stem) ')';
-  left: -1.3em;
-  width: 1.3em;
+  left: -1.8em;
+  width: 1.8em;
 }
 
 /* 第 7 層：子、 地支 + 全形頓號 */
