@@ -598,13 +598,7 @@
     widows: 3;
   }
 
-  /* 列表列印樣式 */
-  .ProseMirror ul,
-  .ProseMirror ol {
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-
+  /* 列表列印樣式 — ol/ul 允許跨頁，僅 li 避免跨頁 */
   .ProseMirror li {
     page-break-inside: avoid;
     break-inside: avoid;

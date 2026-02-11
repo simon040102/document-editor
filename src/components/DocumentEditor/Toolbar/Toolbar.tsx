@@ -189,6 +189,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
                 left: -2em;
                 width: 2em;
                 text-align: right;
+                white-space: nowrap;
                 color: #000;
                 font-weight: 500;
               }
@@ -196,7 +197,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               /* 第 2 層：(一) 半形括號 + 中文數字 */
               ol ol {
                 counter-reset: list-L2;
-                padding-left: 2em;
+                padding-left: 1.5em;
               }
 
               ol ol > li { counter-increment: list-L2; }
@@ -224,7 +225,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               /* 第 4 層：(1) 半形括號 + 阿拉伯數字 */
               ol ol ol ol {
                 counter-reset: list-L4;
-                padding-left: 1.5em;
+                padding-left: 1.2em;
               }
 
               ol ol ol ol > li { counter-increment: list-L4; }
@@ -252,7 +253,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               /* 第 6 層：(甲) 半形括號 + 天干 */
               ol ol ol ol ol ol {
                 counter-reset: list-L6;
-                padding-left: 1.8em;
+                padding-left: 1.3em;
               }
 
               ol ol ol ol ol ol > li { counter-increment: list-L6; }
