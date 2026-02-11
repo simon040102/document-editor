@@ -114,6 +114,7 @@
   left: -2em;
   width: 2em;
   text-align: right;
+  white-space: nowrap;
   color: #495057;
   font-weight: 500;
 }
