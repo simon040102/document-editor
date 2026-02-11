@@ -111,7 +111,7 @@
 .ProseMirror ol > li::before {
   content: counter(list-L1, trad-chinese-informal) '、';
   position: absolute;
-  left: -2em;
+  left: -1.8em;
   width: 2em;
   text-align: right;
   color: #495057;
@@ -147,7 +147,7 @@
 
 .ProseMirror ol ol ol > li::before {
   content: counter(list-L3, decimal) '\3001';
-  left: -1.5em;
+  left: -1.3em;
   width: 1.5em;
 }
 
@@ -179,7 +179,7 @@
 
 .ProseMirror ol ol ol ol ol > li::before {
   content: counter(list-L5, cjk-heavenly-stem) '\3001';
-  left: -1.8em;
+  left: -1.6em;
   width: 1.8em;
 }
 
@@ -211,7 +211,7 @@
 
 .ProseMirror ol ol ol ol ol ol ol > li::before {
   content: counter(list-L7, cjk-earthly-branch) '\3001';
-  left: -1.8em;
+  left: -1.6em;
   width: 1.8em;
 }
 
