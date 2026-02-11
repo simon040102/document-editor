@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import DocumentEditor from './components/DocumentEditor/DocumentEditor'
+import OfficialDocumentForm from './components/OfficialDocument/OfficialDocumentForm'
 import './App.css'
+
+type TabKey = 'editor' | 'official'
 
 function App() {
   const [content, setContent] = useState('')
   const [htmlContent, setHtmlContent] = useState('')
   const [showOutput, setShowOutput] = useState(false)
+  const [activeTab, setActiveTab] = useState<TabKey>('editor')
 
   const handleContentChange = (newContent: string) => {
     setContent(newContent)
@@ -35,25 +39,54 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
+  const handleLoadToEditor = (html: string) => {
+    const editor = (window as unknown as Record<string, unknown>).__tiptapEditor as {
+      commands: { setContent: (content: string) => void }
+    } | undefined
+    if (editor) {
+      editor.commands.setContent(html)
+    }
+    setActiveTab('editor')
+  }
+
   return (
     <div className="app">
       <header className="app-header">
-        <h1>📝 Document Editor - 文件編輯器</h1>
+        <h1>Document Editor - 文件編輯器</h1>
         <div className="header-actions">
-          <button onClick={() => setShowOutput(!showOutput)} className="btn-secondary">
-            {showOutput ? '隱藏輸出' : '顯示輸出'}
-          </button>
-          <button onClick={exportHTML} className="btn-primary">
-            匯出 HTML
-          </button>
-          <button onClick={exportJSON} className="btn-primary">
-            匯出 JSON
-          </button>
+          {activeTab === 'editor' && (
+            <>
+              <button onClick={() => setShowOutput(!showOutput)} className="btn-secondary">
+                {showOutput ? '隱藏輸出' : '顯示輸出'}
+              </button>
+              <button onClick={exportHTML} className="btn-primary">
+                匯出 HTML
+              </button>
+              <button onClick={exportJSON} className="btn-primary">
+                匯出 JSON
+              </button>
+            </>
+          )}
         </div>
       </header>
 
+      <nav className="app-tabs">
+        <button
+          className={`tab-btn ${activeTab === 'editor' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('editor')}
+        >
+          一般編輯
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'official' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('official')}
+        >
+          公文製作
+        </button>
+      </nav>
+
       <main className="app-main">
-        <div className="editor-section">
+        <div className="editor-section" style={{ display: activeTab === 'editor' ? undefined : 'none' }}>
           <DocumentEditor
             content={content}
             onChange={handleContentChange}
@@ -62,7 +95,7 @@ function App() {
           />
         </div>
 
-        {showOutput && (
+        {activeTab === 'editor' && showOutput && (
           <div className="output-section">
             <div className="output-panel">
               <h3>HTML 輸出</h3>
@@ -72,6 +105,12 @@ function App() {
               <h3>JSON 輸出</h3>
               <pre className="output-code">{content}</pre>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'official' && (
+          <div className="official-section">
+            <OfficialDocumentForm onLoadToEditor={handleLoadToEditor} />
           </div>
         )}
       </main>

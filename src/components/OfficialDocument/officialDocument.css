@@ -1,0 +1,332 @@
+.official-doc-form {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-header {
+  margin-bottom: 24px;
+  border-bottom: 2px solid #0d6efd;
+  padding-bottom: 12px;
+}
+
+.form-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #212529;
+  margin: 0 0 4px;
+}
+
+.form-subtitle {
+  font-size: 14px;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Section */
+.form-section {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.form-section legend {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0d6efd;
+  padding: 0 8px;
+}
+
+/* Form Row */
+.form-row {
+  margin-bottom: 14px;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-row > label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 4px;
+}
+
+.required {
+  color: #dc3545;
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row textarea,
+.form-row select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #212529;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+.form-row textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.form-row select {
+  cursor: pointer;
+  background: #fff;
+}
+
+/* Inline Fields */
+.form-row-inline {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.form-row-inline > .inline-field {
+  flex: 1;
+}
+
+.inline-field > label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 4px;
+}
+
+.inline-field input[type="text"],
+.inline-field input[type="email"],
+.inline-field select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #212529;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.inline-field input:focus,
+.inline-field select:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+.inline-field-small {
+  flex: 0 0 120px !important;
+}
+
+/* Date Inputs */
+.date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.date-inputs span {
+  font-size: 14px;
+  color: #495057;
+  white-space: nowrap;
+}
+
+.date-input {
+  width: 70px !important;
+  text-align: center;
+}
+
+.date-input-short {
+  width: 50px !important;
+}
+
+/* List Items (說明/辦法) */
+.list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.list-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.item-number {
+  flex-shrink: 0;
+  width: 24px;
+  padding-top: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6c757d;
+  text-align: right;
+}
+
+.list-item-row textarea {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #212529;
+  resize: vertical;
+  min-height: 50px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.list-item-row textarea:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+.btn-remove {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-top: 6px;
+  border: none;
+  background: #f8d7da;
+  color: #dc3545;
+  border-radius: 4px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.btn-remove:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+.btn-add {
+  align-self: flex-start;
+  padding: 6px 14px;
+  border: 1px dashed #0d6efd;
+  background: transparent;
+  color: #0d6efd;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add:hover {
+  background: #e7f1ff;
+}
+
+/* Action Buttons */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.btn-generate {
+  padding: 10px 28px;
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-generate:hover {
+  background: #0b5ed7;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
+}
+
+.btn-load-editor {
+  padding: 10px 20px;
+  background: #198754;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-load-editor:hover {
+  background: #157347;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(25, 135, 84, 0.3);
+}
+
+.btn-reset {
+  padding: 10px 20px;
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset:hover {
+  background: #5c636a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .official-doc-form {
+    padding: 16px;
+  }
+
+  .form-section {
+    padding: 12px 14px;
+  }
+
+  .form-row-inline {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .inline-field-small {
+    flex: 1 !important;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
