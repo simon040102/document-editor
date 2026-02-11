@@ -5,6 +5,7 @@ import {
   AlignJustify, List, ListOrdered, ListRestart, IndentIncrease, IndentDecrease, Link2, ImageIcon, Table2,
   TextQuote, Code, Minus, Undo2, Redo2, RemoveFormatting, Printer, FolderOpen,
   UnfoldVertical, FoldVertical, MoveRight, MoveLeft, Maximize2, Minimize2,
+  Lock, LockOpen,
 } from 'lucide-react'
 import { ToolbarProps, CHINESE_PUNCTUATIONS, PAPER_DIMENSIONS, PAPER_CSS_SIZE, PaperSize } from '../types/editor.types'
 import { LINE_HEIGHT_STEPS, DEFAULT_LINE_HEIGHT } from '../extensions/LineHeight'
@@ -22,6 +23,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
   const [imageUrl, setImageUrl] = useState('')
   const [wordCount, setWordCount] = useState({ characters: 0, words: 0 })
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isLocked, setIsLocked] = useState(false)
 
   const punctuationRef = useRef<HTMLDivElement>(null)
   const colorPickerRef = useRef<HTMLDivElement>(null)
@@ -448,6 +450,16 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
     setIsFullscreen(!isFullscreen)
   }
 
+  const toggleLock = () => {
+    const newLocked = !isLocked
+    setIsLocked(newLocked)
+    editor.setEditable(!newLocked)
+    const container = document.querySelector('.editor-container')
+    if (container) {
+      container.classList.toggle('editor-locked', newLocked)
+    }
+  }
+
   // 更多顏色選項
   const colors = [
     '#000000',
@@ -508,7 +520,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
   ]
 
   return (
-    <div className="toolbar">
+    <div className={`toolbar${isLocked ? ' toolbar-locked' : ''}`}>
       {/* 基本格式化按鈕 */}
       <div className="toolbar-group">
         <button
@@ -995,11 +1007,18 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
         <button onClick={() => editor.chain().focus().unsetAllMarks().run()} title="清除格式">
           <RemoveFormatting size={16} />
         </button>
-        <button onClick={handlePrint} title="列印 (Ctrl+P)">
+        <button onClick={handlePrint} title="列印 (Ctrl+P)" className="lock-exempt">
           <Printer size={16} />
         </button>
-        <button onClick={toggleFullscreen} title={isFullscreen ? '退出全視窗' : '全視窗'}>
+        <button onClick={toggleFullscreen} title={isFullscreen ? '退出全視窗' : '全視窗'} className="lock-exempt">
           {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+        </button>
+        <button
+          onClick={toggleLock}
+          className={`lock-btn${isLocked ? ' is-active' : ''}`}
+          title={isLocked ? '解除鎖定（目前已鎖定，無法編輯）' : '鎖定內容（防止誤刪）'}
+        >
+          {isLocked ? <Lock size={16} /> : <LockOpen size={16} />}
         </button>
       </div>
 

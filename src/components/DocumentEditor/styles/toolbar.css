@@ -66,6 +66,34 @@
   border-color: #0b5ed7;
 }
 
+/* 鎖定模式 — 禁用編輯相關按鈕，保留鎖定/列印/全螢幕 */
+.toolbar.toolbar-locked button:not(.lock-btn):not(.lock-exempt) {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.toolbar.toolbar-locked select {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.toolbar.toolbar-locked .word-count {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 鎖定按鈕 */
+.lock-btn.is-active {
+  background: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.lock-btn.is-active:hover {
+  background: #bb2d3b !important;
+  border-color: #bb2d3b !important;
+}
+
 /* 標題選擇器 */
 .heading-select {
   background: #fff;

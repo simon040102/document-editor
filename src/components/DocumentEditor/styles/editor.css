@@ -2,7 +2,7 @@
 .document-editor {
   border: 1px solid #ddd;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -508,6 +508,32 @@
   border-radius: 3px;
   box-shadow: 0 1px 0 #bbb;
   line-height: 1.4;
+}
+
+/* ==================== 鎖定模式 ==================== */
+.editor-container.editor-locked {
+  position: relative;
+}
+
+.editor-container.editor-locked::before {
+  content: '已鎖定 — 點擊工具列鎖頭按鈕解除';
+  position: sticky;
+  top: 8px;
+  z-index: 10;
+  display: block;
+  width: fit-content;
+  margin: 0 auto -28px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 4px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.editor-container.editor-locked .ProseMirror {
+  cursor: not-allowed;
+  opacity: 0.8;
 }
 
 /* ==================== 全視窗模式 ==================== */
