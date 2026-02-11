@@ -138,7 +138,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             <style>
               @page {
                 size: A4;
-                margin: 2.5cm 2.5cm 2.5cm 4cm; /* 左側含裝訂線 2.5+1.5=4cm */
+                margin: 2cm 2cm 2cm 0.5cm;
 
                 @bottom-center {
                   content: counter(page);
@@ -154,7 +154,39 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
                 color: #000;
                 text-align: justify;
                 margin: 0;
+                padding-left: 3.5cm;
                 counter-reset: list-L1;
+              }
+
+              /* 裝訂線 */
+              .binding-line {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 1.2cm;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2cm;
+                font-size: 14pt;
+                color: #888;
+                z-index: 10;
+              }
+
+              .binding-line::after {
+                content: '';
+                position: absolute;
+                right: 0;
+                top: 8%;
+                bottom: 8%;
+                border-right: 1px dashed #bbb;
+              }
+
+              @media screen {
+                .binding-line { display: none; }
+                body { padding-left: 0; }
               }
 
               h1 { font-size: 20pt; margin: 1em 0 0.5em; page-break-after: avoid; }
@@ -379,6 +411,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             </style>
           </head>
           <body>
+            <div class="binding-line"><span>裝</span><span>訂</span><span>線</span></div>
             ${content}
           </body>
         </html>
