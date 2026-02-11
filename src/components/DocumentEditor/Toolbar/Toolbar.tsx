@@ -281,7 +281,6 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               li {
                 margin: 0.2em 0;
                 list-style: none;
-                page-break-inside: avoid;
               }
 
               /* 重新編號 */
