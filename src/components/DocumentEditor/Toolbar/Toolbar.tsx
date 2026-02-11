@@ -169,7 +169,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               /* 第 1 層：一、 中文數字 + 全形頓號 */
               ol {
                 list-style: none;
-                padding-left: 2.5em;
+                padding-left: 2em;
               }
 
               ol > li {
@@ -186,8 +186,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               ol > li::before {
                 content: counter(list-L1, trad-chinese-informal) '\u3001';
                 position: absolute;
-                left: -2.5em;
-                width: 2.3em;
+                left: -2em;
+                width: 2em;
                 text-align: right;
                 color: #000;
                 font-weight: 500;
@@ -196,84 +196,84 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
               /* 第 2 層：(一) 半形括號 + 中文數字 */
               ol ol {
                 counter-reset: list-L2;
-                padding-left: 2.5em;
+                padding-left: 2em;
               }
 
               ol ol > li { counter-increment: list-L2; }
 
               ol ol > li::before {
                 content: '(' counter(list-L2, trad-chinese-informal) ')';
-                left: -2.5em;
-                width: 2.3em;
+                left: -2em;
+                width: 2em;
               }
 
               /* 第 3 層：1、 阿拉伯數字 + 全形頓號 */
               ol ol ol {
                 counter-reset: list-L3;
-                padding-left: 1.8em;
+                padding-left: 1.5em;
               }
 
               ol ol ol > li { counter-increment: list-L3; }
 
               ol ol ol > li::before {
                 content: counter(list-L3, decimal) '\u3001';
-                left: -1.8em;
+                left: -1.5em;
                 width: 1.5em;
               }
 
               /* 第 4 層：(1) 半形括號 + 阿拉伯數字 */
               ol ol ol ol {
                 counter-reset: list-L4;
-                padding-left: 1.8em;
+                padding-left: 1.5em;
               }
 
               ol ol ol ol > li { counter-increment: list-L4; }
 
               ol ol ol ol > li::before {
                 content: '(' counter(list-L4, decimal) ')';
-                left: -1.8em;
+                left: -1.5em;
                 width: 1.5em;
               }
 
               /* 第 5 層：甲、 天干 + 全形頓號 */
               ol ol ol ol ol {
                 counter-reset: list-L5;
-                padding-left: 2em;
+                padding-left: 1.8em;
               }
 
               ol ol ol ol ol > li { counter-increment: list-L5; }
 
               ol ol ol ol ol > li::before {
                 content: counter(list-L5, cjk-heavenly-stem) '\u3001';
-                left: -2em;
+                left: -1.8em;
                 width: 1.8em;
               }
 
               /* 第 6 層：(甲) 半形括號 + 天干 */
               ol ol ol ol ol ol {
                 counter-reset: list-L6;
-                padding-left: 2em;
+                padding-left: 1.8em;
               }
 
               ol ol ol ol ol ol > li { counter-increment: list-L6; }
 
               ol ol ol ol ol ol > li::before {
                 content: '(' counter(list-L6, cjk-heavenly-stem) ')';
-                left: -2em;
+                left: -1.8em;
                 width: 1.8em;
               }
 
               /* 第 7 層：子、 地支 + 全形頓號 */
               ol ol ol ol ol ol ol {
                 counter-reset: list-L7;
-                padding-left: 2em;
+                padding-left: 1.8em;
               }
 
               ol ol ol ol ol ol ol > li { counter-increment: list-L7; }
 
               ol ol ol ol ol ol ol > li::before {
                 content: counter(list-L7, cjk-earthly-branch) '\u3001';
-                left: -2em;
+                left: -1.8em;
                 width: 1.8em;
               }
 
