@@ -46,6 +46,11 @@ function App() {
     if (editor) {
       editor.commands.setContent(html)
     }
+    // 從公文製作載入時自動開啟裝訂線
+    const setBindingLine = (window as unknown as Record<string, unknown>).__setBindingLine as ((v: boolean) => void) | undefined
+    if (setBindingLine) {
+      setBindingLine(true)
+    }
     setActiveTab('editor')
   }
 

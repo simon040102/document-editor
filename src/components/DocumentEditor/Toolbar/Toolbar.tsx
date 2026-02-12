@@ -12,7 +12,7 @@ import { LINE_HEIGHT_STEPS, DEFAULT_LINE_HEIGHT } from '../extensions/LineHeight
 import { INDENT_STEP, MAX_INDENT } from '../extensions/TextIndent'
 import '../styles/toolbar.css'
 
-const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPaperSizeChange, onOrientationChange }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindingLine, onPaperSizeChange, onOrientationChange, onBindingLineChange }) => {
   const [showPunctuationPanel, setShowPunctuationPanel] = useState(false)
   const [showLinkModal, setShowLinkModal] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
@@ -131,26 +131,45 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
     const cssSize = PAPER_CSS_SIZE[paperSize]
     const pageSize = orientation === 'landscape' ? `${cssSize} landscape` : cssSize
 
-    // 根據方向決定邊距（橫向時裝訂線在上方）
-    const pageMargin = orientation === 'landscape'
-      ? '0.5cm 2cm 2cm 2cm'   // 上方裝訂線
-      : '2cm 2cm 2cm 0.5cm'    // 左側裝訂線
+    // 根據是否有裝訂線決定邊距與排版
+    let pageMargin: string
+    let bodyPadding: string
+    let bindingLineCSS = ''
+    let bindingLineHTML = ''
 
-    const bodyPadding = orientation === 'landscape'
-      ? 'padding-top: 3.5cm;'
-      : 'padding-left: 3.5cm;'
+    if (bindingLine) {
+      // 有裝訂線：不對稱邊距 + 額外 padding
+      pageMargin = orientation === 'landscape'
+        ? '0.5cm 2cm 2cm 2cm'
+        : '2cm 2cm 2cm 0.5cm'
+      bodyPadding = orientation === 'landscape'
+        ? 'padding-top: 3.5cm;'
+        : 'padding-left: 3.5cm;'
 
-    const bindingLineStyle = orientation === 'landscape'
-      ? `position: fixed; left: 0; right: 0; top: 0; height: 1.2cm;
-         display: flex; flex-direction: row; align-items: center; justify-content: center;
-         gap: 2cm; font-size: 14pt; color: #888; z-index: 10;`
-      : `position: fixed; left: 0; top: 0; bottom: 0; width: 1.2cm;
-         display: flex; flex-direction: column; align-items: center; justify-content: center;
-         gap: 2cm; font-size: 14pt; color: #888; z-index: 10;`
+      const bindingLineStyle = orientation === 'landscape'
+        ? `position: fixed; left: 0; right: 0; top: 0; height: 1.2cm;
+           display: flex; flex-direction: row; align-items: center; justify-content: center;
+           gap: 2cm; font-size: 14pt; color: #888; z-index: 10;`
+        : `position: fixed; left: 0; top: 0; bottom: 0; width: 1.2cm;
+           display: flex; flex-direction: column; align-items: center; justify-content: center;
+           gap: 2cm; font-size: 14pt; color: #888; z-index: 10;`
+      const bindingLineAfter = orientation === 'landscape'
+        ? `content: ''; position: absolute; bottom: 0; left: 8%; right: 8%; border-bottom: 1px dashed #bbb;`
+        : `content: ''; position: absolute; right: 0; top: 8%; bottom: 8%; border-right: 1px dashed #bbb;`
 
-    const bindingLineAfter = orientation === 'landscape'
-      ? `content: ''; position: absolute; bottom: 0; left: 8%; right: 8%; border-bottom: 1px dashed #bbb;`
-      : `content: ''; position: absolute; right: 0; top: 8%; bottom: 8%; border-right: 1px dashed #bbb;`
+      bindingLineCSS = `
+              .binding-line { ${bindingLineStyle} }
+              .binding-line::after { ${bindingLineAfter} }
+              @media screen {
+                .binding-line { display: none; }
+                body { ${orientation === 'landscape' ? 'padding-top: 0;' : 'padding-left: 0;'} }
+              }`
+      bindingLineHTML = '<div class="binding-line"><span>裝</span><span>訂</span><span>線</span></div>'
+    } else {
+      // 無裝訂線：對稱邊距
+      pageMargin = '2cm'
+      bodyPadding = ''
+    }
 
     // 創建一個新視窗用於列印
     const printWindow = window.open('', '_blank', 'width=800,height=600')
@@ -186,19 +205,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
                 counter-reset: list-L1;
               }
 
-              /* 裝訂線 */
-              .binding-line {
-                ${bindingLineStyle}
-              }
-
-              .binding-line::after {
-                ${bindingLineAfter}
-              }
-
-              @media screen {
-                .binding-line { display: none; }
-                body { padding-left: 0; }
-              }
+              ${bindingLineCSS}
 
               h1 { font-size: 20pt; margin: 1em 0 0.5em; page-break-after: avoid; }
               h2 { font-size: 16pt; margin: 0.8em 0 0.4em; page-break-after: avoid; }
@@ -422,7 +429,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
             </style>
           </head>
           <body>
-            <div class="binding-line"><span>裝</span><span>訂</span><span>線</span></div>
+            ${bindingLineHTML}
             ${content}
           </body>
         </html>
@@ -1053,6 +1060,13 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, onPap
           title={orientation === 'portrait' ? '切換為橫向' : '切換為直向'}
         >
           {orientation === 'portrait' ? '直' : '橫'}
+        </button>
+        <button
+          onClick={() => onBindingLineChange(!bindingLine)}
+          className={bindingLine ? 'is-active' : ''}
+          title={bindingLine ? '關閉裝訂線' : '開啟裝訂線（列印時顯示）'}
+        >
+          裝訂
         </button>
       </div>
 

@@ -38,6 +38,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   const [isInitialized, setIsInitialized] = React.useState(false)
   const [paperSize, setPaperSize] = React.useState<PaperSize>('A4')
   const [orientation, setOrientation] = React.useState<Orientation>('portrait')
+  const [bindingLine, setBindingLine] = React.useState(false)
 
   const dim = PAPER_DIMENSIONS[paperSize]
   const paperW = orientation === 'portrait' ? dim.width : dim.height
@@ -126,6 +127,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       setIsInitialized(true)
       // 暴露 editor 實例到 window，供測試和外部存取
       ;(window as unknown as Record<string, unknown>).__tiptapEditor = editor
+      ;(window as unknown as Record<string, unknown>).__setBindingLine = (v: boolean) => setBindingLine(v)
     },
   })
 
@@ -157,8 +159,10 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         editor={editor}
         paperSize={paperSize}
         orientation={orientation}
+        bindingLine={bindingLine}
         onPaperSizeChange={setPaperSize}
         onOrientationChange={setOrientation}
+        onBindingLineChange={setBindingLine}
       />
       <div className="editor-container">
         <EditorContent editor={editor} placeholder={placeholder} />

@@ -34,8 +34,10 @@ export interface ToolbarProps {
   editor: Editor | null
   paperSize: PaperSize
   orientation: Orientation
+  bindingLine: boolean
   onPaperSizeChange: (size: PaperSize) => void
   onOrientationChange: (orientation: Orientation) => void
+  onBindingLineChange: (enabled: boolean) => void
 }
 
 export interface PunctuationItem {
