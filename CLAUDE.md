@@ -10,27 +10,35 @@
 - **編輯器核心**: Tiptap 3.x (ProseMirror)
 - **建構工具**: Vite 7.x
 - **圖示**: lucide-react
+- **表單管理**: react-hook-form
 - **測試**: Puppeteer (headless browser)
 - **部署**: GitHub → main 分支
 
 ## 目錄結構
 
 ```
-src/components/DocumentEditor/
-├── DocumentEditor.tsx        # 主元件，註冊所有 Tiptap 擴充
-├── Toolbar/Toolbar.tsx       # 工具列 UI + handlePrint 列印功能
-├── BubbleMenu/               # 連結與表格的氣泡選單
-├── extensions/               # 自訂 Tiptap 擴充
-│   ├── FontSize.ts           # 字級控制
-│   ├── LineHeight.ts         # 行距控制
-│   ├── TextIndent.ts         # 縮排控制
-│   ├── ListNumbering.ts      # 列表重新編號 (restartNumbering)
-│   └── WordPaste.ts          # Word 貼上格式轉換
-├── styles/
-│   ├── editor.css            # 編輯器主樣式（含列表 7 層 CSS counters、列印樣式）
-│   └── toolbar.css           # 工具列樣式
-├── types/editor.types.ts     # TypeScript 型別定義
-└── index.ts                  # 匯出入口
+src/components/
+├── DocumentEditor/               # 通用富文本編輯器元件
+│   ├── DocumentEditor.tsx        # 主元件，註冊所有 Tiptap 擴充
+│   ├── Toolbar/Toolbar.tsx       # 工具列 UI + handlePrint 列印功能
+│   ├── BubbleMenu/               # 連結與表格的氣泡選單
+│   ├── extensions/               # 自訂 Tiptap 擴充
+│   │   ├── FontSize.ts           # 字級控制
+│   │   ├── LineHeight.ts         # 行距控制
+│   │   ├── TextIndent.ts         # 縮排控制
+│   │   ├── ListNumbering.ts      # 列表重新編號 (restartNumbering)
+│   │   └── WordPaste.ts          # Word 貼上格式轉換
+│   ├── styles/
+│   │   ├── editor.css            # 編輯器主樣式（含列表 7 層 CSS counters、列印樣式）
+│   │   └── toolbar.css           # 工具列樣式
+│   ├── types/editor.types.ts     # TypeScript 型別定義
+│   └── index.ts                  # 匯出入口
+│
+└── OfficialDocumentEditor/       # 公文編輯器（整合表單 + 編輯器 + JSON 匯出入）
+    ├── OfficialDocumentEditor.tsx # 主元件，react-hook-form 表單 + DocumentEditor
+    ├── printUtils.ts             # 公文列印 HTML 生成（generateOfficialPrintHTML）
+    ├── officialDocumentEditor.css # 表單 & 動作列 & JSON 面板樣式
+    └── index.ts                  # 匯出入口（default + named exports）
 ```
 
 ## 關鍵檔案說明
@@ -45,7 +53,13 @@ src/components/DocumentEditor/
 ### Toolbar.tsx — handlePrint 列印樣式
 - `handlePrint` 函數開啟新視窗並注入 inline CSS
 - **重要**：編輯器 CSS 與列印 CSS 必須保持同步！修改 editor.css 中的列表樣式時，必須同步更新 Toolbar.tsx 的 handlePrint 內對應的 inline styles
-- 列印設定：A4、邊界 2.5cm（左 4cm 含裝訂線）、標楷體、頁碼置中
+- 列印設定：A4、`@page { margin: 0 }`（消除瀏覽器自動頁首頁尾）、body padding 控制實際邊距、標楷體
+
+### printUtils.ts — 公文列印 HTML 生成
+- `generateOfficialPrintHTML` 產生完整公文列印頁面
+- 包含：裝訂線、發文單位標題、受文者、發文日期/字號、編輯器內容、正本副本
+- `@page { margin: 0 }` + body padding 方式消除瀏覽器自動頁首頁尾
+- `OfficialDocFormData` 型別定義、`defaultFormData` 預設值
 
 ### ListNumbering.ts — 重新編號擴充
 - 為 `orderedList` 新增 `restartNumbering` 屬性
@@ -97,9 +111,10 @@ node test-editor.mjs
 
 | 修改項目 | 需同步更新的檔案 |
 |---------|----------------|
-| 列表層級樣式（padding、marker） | `editor.css` + `Toolbar.tsx` (handlePrint) |
+| 列表層級樣式（padding、marker） | `editor.css` + `Toolbar.tsx` (handlePrint) + `printUtils.ts` |
 | 新增 Tiptap 擴充 | `DocumentEditor.tsx` (import + extensions 陣列) |
-| 層級數量變更 | `editor.css` + `Toolbar.tsx` + `DocumentEditor.tsx` (操作說明) + `README.md` + `test-editor.mjs` |
+| 層級數量變更 | `editor.css` + `Toolbar.tsx` + `printUtils.ts` + `DocumentEditor.tsx` (操作說明) + `README.md` + `test-editor.mjs` |
+| 公文表單欄位變更 | `OfficialDocumentEditor.tsx` + `printUtils.ts` (OfficialDocFormData + defaultFormData + HTML 模板) |
 
 ### CSS Counter 機制
 - `.ProseMirror` 上的 `counter-reset: list-L1 0` 是全域的，讓多個 `<ol>` 區塊共用計數器
@@ -113,10 +128,12 @@ node test-editor.mjs
 - 修改編輯器外觀後務必同步列印樣式
 
 ### 測試
-- `test-editor.mjs` 使用 `window.__tiptapEditor` API 操作編輯器
-- 該 API 在 `DocumentEditor.tsx` 的 `onCreate` callback 中暴露
+- `test-editor.mjs` — 通用編輯器測試（約 48 項斷言）
+- `test-official-doc.mjs` — 公文編輯器測試（表單填寫、列印、JSON round-trip）
+- 使用 `window.__tiptapEditor` API 操作編輯器（在 `DocumentEditor.tsx` 的 `onCreate` 暴露）
+- 使用 `window.__setFormData` API 操作公文表單（在 `OfficialDocumentEditor.tsx` 暴露）
 - 測試依賴 dev server 在 port 3000 運行
-- 新增功能時應在 test-editor.mjs 補充對應測試
+- 新增功能時應在對應測試檔案補充測試
 
 ### Git 工作流
 - 主分支：`main`

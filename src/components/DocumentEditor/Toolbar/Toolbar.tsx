@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import {
-  Bold, Italic, Underline as UnderlineIcon, Strikethrough, Superscript as SuperscriptIcon,
-  Subscript as SubscriptIcon, Type, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight,
-  AlignJustify, List, ListOrdered, ListRestart, IndentIncrease, IndentDecrease, Link2, ImageIcon, Table2,
-  TextQuote, Code, Minus, Undo2, Redo2, RemoveFormatting, Printer, FolderOpen,
+  Bold, Italic, Underline as UnderlineIcon, Strikethrough,
+  Type, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight,
+  AlignJustify, List, ListOrdered, ListRestart, IndentIncrease, IndentDecrease,
+  Minus, Undo2, Redo2, RemoveFormatting, Printer,
   UnfoldVertical, FoldVertical, MoveRight, MoveLeft, Maximize2, Minimize2,
   Lock, LockOpen,
 } from 'lucide-react'
@@ -12,15 +12,11 @@ import { LINE_HEIGHT_STEPS, DEFAULT_LINE_HEIGHT } from '../extensions/LineHeight
 import { INDENT_STEP, MAX_INDENT } from '../extensions/TextIndent'
 import '../styles/toolbar.css'
 
-const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindingLine, onPaperSizeChange, onOrientationChange, onBindingLineChange }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindingLine, onPaperSizeChange, onOrientationChange, onBindingLineChange, onPrintOverride }) => {
   const [showPunctuationPanel, setShowPunctuationPanel] = useState(false)
-  const [showLinkModal, setShowLinkModal] = useState(false)
-  const [linkUrl, setLinkUrl] = useState('')
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showHighlightPicker, setShowHighlightPicker] = useState(false)
   const [showFontPicker, setShowFontPicker] = useState(false)
-  const [showImageModal, setShowImageModal] = useState(false)
-  const [imageUrl, setImageUrl] = useState('')
   const [wordCount, setWordCount] = useState({ characters: 0, words: 0 })
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
@@ -80,50 +76,12 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
     setShowPunctuationPanel(false)
   }
 
-  const setLink = () => {
-    if (linkUrl) {
-      editor.chain().focus().setLink({ href: linkUrl }).run()
-      setLinkUrl('')
-      setShowLinkModal(false)
-    }
-  }
-
-  const addImage = () => {
-    setShowImageModal(true)
-  }
-
-  const insertImageFromUrl = () => {
-    if (imageUrl) {
-      editor.chain().focus().setImage({ src: imageUrl }).run()
-      setImageUrl('')
-      setShowImageModal(false)
-    }
-  }
-
-  const insertImageFromFile = () => {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = 'image/*'
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (file) {
-        const reader = new FileReader()
-        reader.onload = (event) => {
-          const src = event.target?.result as string
-          editor.chain().focus().setImage({ src }).run()
-          setShowImageModal(false)
-        }
-        reader.readAsDataURL(file)
-      }
-    }
-    input.click()
-  }
-
-  const insertTable = () => {
-    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
-  }
-
   const handlePrint = () => {
+    if (onPrintOverride) {
+      onPrintOverride()
+      return
+    }
+
     // 獲取編輯器的 HTML 內容
     const content = editor.getHTML()
 
@@ -138,13 +96,11 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
     let bindingLineHTML = ''
 
     if (bindingLine) {
-      // 有裝訂線：不對稱邊距 + 額外 padding
-      pageMargin = orientation === 'landscape'
-        ? '0.5cm 2cm 2cm 2cm'
-        : '2cm 2cm 2cm 0.5cm'
+      // 有裝訂線：@page margin: 0 消除瀏覽器頁首/頁尾，用 body padding 控制邊距
+      pageMargin = '0'
       bodyPadding = orientation === 'landscape'
-        ? 'padding-top: 3.5cm;'
-        : 'padding-left: 3.5cm;'
+        ? 'padding: 4cm 2cm 2cm 2cm;'
+        : 'padding: 2cm 2cm 2cm 4cm;'
 
       const bindingLineStyle = orientation === 'landscape'
         ? `position: fixed; left: 0; right: 0; top: 0; height: 1.2cm;
@@ -162,13 +118,13 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
               .binding-line::after { ${bindingLineAfter} }
               @media screen {
                 .binding-line { display: none; }
-                body { ${orientation === 'landscape' ? 'padding-top: 0;' : 'padding-left: 0;'} }
+                body { padding: 2cm; }
               }`
       bindingLineHTML = '<div class="binding-line"><span>裝</span><span>訂</span><span>線</span></div>'
     } else {
-      // 無裝訂線：對稱邊距
-      pageMargin = '2cm'
-      bodyPadding = ''
+      // 無裝訂線：@page margin: 0 消除瀏覽器頁首/頁尾，用 body padding 控制邊距
+      pageMargin = '0'
+      bodyPadding = 'padding: 2cm;'
     }
 
     // 創建一個新視窗用於列印
@@ -186,12 +142,6 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
               @page {
                 size: ${pageSize};
                 margin: ${pageMargin};
-
-                @bottom-center {
-                  content: counter(page);
-                  font-family: DFKai-SB, BiauKai, '標楷體', serif;
-                  font-size: 10pt;
-                }
               }
 
               body {
@@ -233,7 +183,11 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
                 display: none;
               }
 
-              ol > li::before {
+              ol > li > p:first-child {
+                position: relative;
+              }
+
+              ol > li > p:first-child::before {
                 content: counter(list-L1, trad-chinese-informal) '\u3001';
                 position: absolute;
                 left: -2em;
@@ -252,7 +206,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
               ol ol > li { counter-increment: list-L2; }
 
-              ol ol > li::before {
+              ol ol > li > p:first-child::before {
                 content: '(' counter(list-L2, trad-chinese-informal) ')';
                 left: -2em;
                 width: 2em;
@@ -266,7 +220,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
               ol ol ol > li { counter-increment: list-L3; }
 
-              ol ol ol > li::before {
+              ol ol ol > li > p:first-child::before {
                 content: counter(list-L3, decimal) '\u3001';
                 left: -1.5em;
                 width: 1.5em;
@@ -280,7 +234,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
               ol ol ol ol > li { counter-increment: list-L4; }
 
-              ol ol ol ol > li::before {
+              ol ol ol ol > li > p:first-child::before {
                 content: '(' counter(list-L4, decimal) ')';
                 left: -1.5em;
                 width: 1.5em;
@@ -294,7 +248,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
               ol ol ol ol ol > li { counter-increment: list-L5; }
 
-              ol ol ol ol ol > li::before {
+              ol ol ol ol ol > li > p:first-child::before {
                 content: counter(list-L5, cjk-heavenly-stem) '\u3001';
                 left: -1.8em;
                 width: 1.8em;
@@ -308,7 +262,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
               ol ol ol ol ol ol > li { counter-increment: list-L6; }
 
-              ol ol ol ol ol ol > li::before {
+              ol ol ol ol ol ol > li > p:first-child::before {
                 content: '(' counter(list-L6, cjk-heavenly-stem) ')';
                 left: -1.8em;
                 width: 1.8em;
@@ -322,7 +276,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
               ol ol ol ol ol ol ol > li { counter-increment: list-L7; }
 
-              ol ol ol ol ol ol ol > li::before {
+              ol ol ol ol ol ol ol > li > p:first-child::before {
                 content: counter(list-L7, cjk-earthly-branch) '\u3001';
                 left: -1.8em;
                 width: 1.8em;
@@ -558,20 +512,6 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
           title="刪除線"
         >
           <Strikethrough size={16} />
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleSuperscript().run()}
-          className={editor.isActive('superscript') ? 'is-active' : ''}
-          title="上標 (x²)"
-        >
-          <SuperscriptIcon size={16} />
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleSubscript().run()}
-          className={editor.isActive('subscript') ? 'is-active' : ''}
-          title="下標 (H₂O)"
-        >
-          <SubscriptIcon size={16} />
         </button>
       </div>
 
@@ -973,29 +913,6 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
       {/* 進階功能 */}
       <div className="toolbar-group">
-        <button onClick={() => setShowLinkModal(true)} title="插入連結">
-          <Link2 size={16} />
-        </button>
-        <button onClick={addImage} title="插入圖片">
-          <ImageIcon size={16} />
-        </button>
-        <button onClick={insertTable} title="插入表格">
-          <Table2 size={16} />
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={editor.isActive('blockquote') ? 'is-active' : ''}
-          title="引用"
-        >
-          <TextQuote size={16} />
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          className={editor.isActive('codeBlock') ? 'is-active' : ''}
-          title="程式碼區塊"
-        >
-          <Code size={16} />
-        </button>
         <button onClick={() => editor.chain().focus().setHorizontalRule().run()} title="分隔線">
           <Minus size={16} />
         </button>
@@ -1079,57 +996,6 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
         </span>
       </div>
 
-      {/* 連結Modal */}
-      {showLinkModal && (
-        <div className="modal-overlay" onClick={() => setShowLinkModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>插入連結</h3>
-            <input
-              type="url"
-              placeholder="https://example.com"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && setLink()}
-              autoFocus
-            />
-            <div className="modal-buttons">
-              <button onClick={setLink}>確定</button>
-              <button onClick={() => setShowLinkModal(false)}>取消</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 圖片Modal */}
-      {showImageModal && (
-        <div className="modal-overlay" onClick={() => setShowImageModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>插入圖片</h3>
-            <div className="image-insert-options">
-              <div className="image-option">
-                <label>圖片URL：</label>
-                <input
-                  type="url"
-                  placeholder="https://example.com/image.jpg"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && insertImageFromUrl()}
-                />
-                <button onClick={insertImageFromUrl}>插入URL</button>
-              </div>
-              <div className="image-divider">或</div>
-              <div className="image-option">
-                <button onClick={insertImageFromFile} className="file-upload-button">
-                  <FolderOpen size={16} style={{ marginRight: 6, verticalAlign: 'middle' }} /> 從電腦選擇圖片
-                </button>
-              </div>
-            </div>
-            <div className="modal-buttons">
-              <button onClick={() => setShowImageModal(false)}>取消</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -7,6 +7,11 @@ export interface DocumentEditorProps {
   placeholder?: string
   editable?: boolean
   className?: string
+  onEditorReady?: (editor: Editor) => void
+  onPrintOverride?: () => void
+  onPaperSizeChange?: (size: PaperSize) => void
+  onOrientationChange?: (orientation: Orientation) => void
+  defaultBindingLine?: boolean
 }
 
 export type PaperSize = 'A4' | 'A3' | 'B4' | 'B5' | 'Letter' | 'Legal'
@@ -38,6 +43,7 @@ export interface ToolbarProps {
   onPaperSizeChange: (size: PaperSize) => void
   onOrientationChange: (orientation: Orientation) => void
   onBindingLineChange: (enabled: boolean) => void
+  onPrintOverride?: () => void
 }
 
 export interface PunctuationItem {

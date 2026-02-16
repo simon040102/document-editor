@@ -69,16 +69,46 @@ function MyComponent() {
 #### Props 說明
 ```typescript
 interface DocumentEditorProps {
-  content?: string              // 初始內容（JSON 字串或 HTML）
-  onChange?: (json: string) => void     // 內容變更回調（JSON 格式）
-  onHTMLChange?: (html: string) => void // 內容變更回調（HTML 格式）
-  placeholder?: string          // 提示文字
-  editable?: boolean           // 是否可編輯（預設 true）
-  className?: string           // 自訂 CSS class
+  content?: string                           // 初始內容（JSON 字串或 HTML）
+  onChange?: (json: string) => void          // 內容變更回調（JSON 格式）
+  onHTMLChange?: (html: string) => void      // 內容變更回調（HTML 格式）
+  placeholder?: string                       // 提示文字
+  editable?: boolean                         // 是否可編輯（預設 true）
+  className?: string                         // 自訂 CSS class
+  onEditorReady?: (editor: Editor) => void   // Editor 實例建立完成回調
+  onPrintOverride?: () => void               // 覆寫列印行為（取代內建列印）
+  onPaperSizeChange?: (size: PaperSize) => void      // 紙張大小變更回調
+  onOrientationChange?: (o: Orientation) => void     // 紙張方向變更回調
+  defaultBindingLine?: boolean               // 預設開啟裝訂線（預設 false）
 }
 ```
 
-### 4️⃣ 進階使用範例
+#### 型別定義
+```typescript
+type PaperSize = 'A4' | 'A3' | 'B4' | 'B5' | 'Letter' | 'Legal'
+type Orientation = 'portrait' | 'landscape'
+```
+
+### 4️⃣ 搭配 OfficialDocumentEditor（公文編輯器）
+
+如果需要完整公文功能（表頭/表尾表單 + 列印 + JSON 匯出入），可以搭配 `OfficialDocumentEditor` 使用：
+
+```bash
+# 額外安裝
+npm install react-hook-form
+```
+
+```tsx
+import OfficialDocumentEditor from './components/OfficialDocumentEditor'
+
+function App() {
+  return <OfficialDocumentEditor />
+}
+```
+
+詳見 `OfficialDocumentEditor/` 資料夾。
+
+### 5️⃣ 進階使用範例
 
 #### 儲存到資料庫
 ```tsx

@@ -1,0 +1,5 @@
+export { default } from './OfficialDocumentEditor'
+export { default as OfficialDocumentEditor } from './OfficialDocumentEditor'
+export type { DocumentData } from './OfficialDocumentEditor'
+export type { OfficialDocFormData } from './printUtils'
+export { defaultFormData, generateOfficialPrintHTML } from './printUtils'

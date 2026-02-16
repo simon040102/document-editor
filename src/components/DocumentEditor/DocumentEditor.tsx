@@ -34,11 +34,16 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   placeholder = '開始輸入內容...',
   editable = true,
   className = '',
+  onEditorReady,
+  onPrintOverride,
+  onPaperSizeChange: onPaperSizeChangeExternal,
+  onOrientationChange: onOrientationChangeExternal,
+  defaultBindingLine = false,
 }) => {
   const [isInitialized, setIsInitialized] = React.useState(false)
   const [paperSize, setPaperSize] = React.useState<PaperSize>('A4')
   const [orientation, setOrientation] = React.useState<Orientation>('portrait')
-  const [bindingLine, setBindingLine] = React.useState(false)
+  const [bindingLine, setBindingLine] = React.useState(defaultBindingLine)
 
   const dim = PAPER_DIMENSIONS[paperSize]
   const paperW = orientation === 'portrait' ? dim.width : dim.height
@@ -46,7 +51,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   const MM_TO_PX = 3.7795
   const paperStyle = {
     '--paper-width': `${Math.round(paperW * MM_TO_PX)}px`,
-    '--paper-min-height': `${Math.round(paperH * MM_TO_PX)}px`,
+    '--paper-min-height': `${Math.round(paperH * MM_TO_PX / 2)}px`,
   } as React.CSSProperties
 
   const editor = useEditor({
@@ -128,6 +133,9 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       // 暴露 editor 實例到 window，供測試和外部存取
       ;(window as unknown as Record<string, unknown>).__tiptapEditor = editor
       ;(window as unknown as Record<string, unknown>).__setBindingLine = (v: boolean) => setBindingLine(v)
+      if (onEditorReady) {
+        onEditorReady(editor)
+      }
     },
   })
 
@@ -160,9 +168,16 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         paperSize={paperSize}
         orientation={orientation}
         bindingLine={bindingLine}
-        onPaperSizeChange={setPaperSize}
-        onOrientationChange={setOrientation}
+        onPaperSizeChange={(size) => {
+          setPaperSize(size)
+          if (onPaperSizeChangeExternal) onPaperSizeChangeExternal(size)
+        }}
+        onOrientationChange={(o) => {
+          setOrientation(o)
+          if (onOrientationChangeExternal) onOrientationChangeExternal(o)
+        }}
         onBindingLineChange={setBindingLine}
+        onPrintOverride={onPrintOverride}
       />
       <div className="editor-container">
         <EditorContent editor={editor} placeholder={placeholder} />

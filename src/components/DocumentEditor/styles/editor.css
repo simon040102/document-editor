@@ -11,9 +11,10 @@
   min-height: 500px;
 }
 
-/* 編輯器容器 — 灰色桌面背景 */
+/* 編輯器容器 — 灰色桌面背景，固定高度（半張 A4），紙張超出時出現捲軸 */
 .editor-container {
-  flex: 1;
+  height: var(--paper-min-height, 562px);
+  flex: none;
   overflow: auto;
   padding: 24px;
   background: #e0e0e0;
@@ -25,7 +26,7 @@
 .ProseMirror {
   outline: none;
   width: var(--paper-width, 794px);
-  min-height: var(--paper-min-height, 1123px);
+  min-height: var(--paper-min-height, 562px);
   font-size: 16px;
   line-height: 1.5;
   color: #333;
@@ -116,7 +117,12 @@
   display: none;
 }
 
-.ProseMirror ol > li::before {
+/* marker 放在 p:first-child 上，確保繼承 p 的 line-height，行距調整時不跑版 */
+.ProseMirror ol > li > p:first-child {
+  position: relative;
+}
+
+.ProseMirror ol > li > p:first-child::before {
   content: counter(list-L1, trad-chinese-informal) '、';
   position: absolute;
   left: -2em;
@@ -138,7 +144,7 @@
   counter-increment: list-L2;
 }
 
-.ProseMirror ol ol > li::before {
+.ProseMirror ol ol > li > p:first-child::before {
   content: '(' counter(list-L2, trad-chinese-informal) ')';
   left: -2em;
   width: 2em;
@@ -154,7 +160,7 @@
   counter-increment: list-L3;
 }
 
-.ProseMirror ol ol ol > li::before {
+.ProseMirror ol ol ol > li > p:first-child::before {
   content: counter(list-L3, decimal) '\3001';
   left: -1.5em;
   width: 1.5em;
@@ -170,7 +176,7 @@
   counter-increment: list-L4;
 }
 
-.ProseMirror ol ol ol ol > li::before {
+.ProseMirror ol ol ol ol > li > p:first-child::before {
   content: '(' counter(list-L4, decimal) ')';
   left: -1.5em;
   width: 1.5em;
@@ -186,7 +192,7 @@
   counter-increment: list-L5;
 }
 
-.ProseMirror ol ol ol ol ol > li::before {
+.ProseMirror ol ol ol ol ol > li > p:first-child::before {
   content: counter(list-L5, cjk-heavenly-stem) '\3001';
   left: -1.8em;
   width: 1.8em;
@@ -202,7 +208,7 @@
   counter-increment: list-L6;
 }
 
-.ProseMirror ol ol ol ol ol ol > li::before {
+.ProseMirror ol ol ol ol ol ol > li > p:first-child::before {
   content: '(' counter(list-L6, cjk-heavenly-stem) ')';
   left: -1.8em;
   width: 1.8em;
@@ -218,7 +224,7 @@
   counter-increment: list-L7;
 }
 
-.ProseMirror ol ol ol ol ol ol ol > li::before {
+.ProseMirror ol ol ol ol ol ol ol > li > p:first-child::before {
   content: counter(list-L7, cjk-earthly-branch) '\3001';
   left: -1.8em;
   width: 1.8em;
@@ -635,7 +641,7 @@
   /* 列表列印樣式 — 允許跨頁，不限制 li 分頁 */
 
   /* 保持中文數字格式 */
-  .ProseMirror ol > li::before {
+  .ProseMirror ol > li > p:first-child::before {
     color: #000;
   }
 
