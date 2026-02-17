@@ -1006,10 +1006,197 @@ async function runTests() {
   }
 
   // ============================
-  // [12] 最終狀態截圖
+  // [12] 列表深度限制測試（最多 7 層）
   // ============================
-  console.log('\n[12] 最終狀態截圖')
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '12-final.png'), fullPage: true })
+  console.log('\n[12] 列表深度限制測試（最多 7 層）')
+
+  // 12a: 載入 8 層巢狀 → appendTransaction 應攤平為 7 層
+  const depth8JSON = {
+    type: 'doc',
+    content: [
+      { type: 'orderedList', content: [
+        { type: 'listItem', content: [
+          { type: 'paragraph', content: [{ type: 'text', text: 'L1' }] },
+          { type: 'orderedList', content: [
+            { type: 'listItem', content: [
+              { type: 'paragraph', content: [{ type: 'text', text: 'L2' }] },
+              { type: 'orderedList', content: [
+                { type: 'listItem', content: [
+                  { type: 'paragraph', content: [{ type: 'text', text: 'L3' }] },
+                  { type: 'orderedList', content: [
+                    { type: 'listItem', content: [
+                      { type: 'paragraph', content: [{ type: 'text', text: 'L4' }] },
+                      { type: 'orderedList', content: [
+                        { type: 'listItem', content: [
+                          { type: 'paragraph', content: [{ type: 'text', text: 'L5' }] },
+                          { type: 'orderedList', content: [
+                            { type: 'listItem', content: [
+                              { type: 'paragraph', content: [{ type: 'text', text: 'L6' }] },
+                              { type: 'orderedList', content: [
+                                { type: 'listItem', content: [
+                                  { type: 'paragraph', content: [{ type: 'text', text: 'L7' }] },
+                                  { type: 'orderedList', content: [
+                                    { type: 'listItem', content: [
+                                      { type: 'paragraph', content: [{ type: 'text', text: 'L8-should-flatten' }] },
+                                    ] },
+                                  ] },
+                                ] },
+                              ] },
+                            ] },
+                          ] },
+                        ] },
+                      ] },
+                    ] },
+                  ] },
+                ] },
+              ] },
+            ] },
+          ] },
+        ] },
+      ] },
+    ],
+  }
+
+  await page.evaluate((json) => {
+    window.__tiptapEditor.commands.setContent(json)
+  }, depth8JSON)
+  await sleep(500)
+
+  const depthCheck = await page.evaluate(() => {
+    const pm = document.querySelector('.ProseMirror')
+    // 計算最大巢狀深度
+    function maxOlDepth(el, depth) {
+      let max = depth
+      for (const child of el.children) {
+        if (child.tagName === 'OL' || child.tagName === 'UL') {
+          const d = maxOlDepth(child, depth + 1)
+          if (d > max) max = d
+        } else {
+          const d = maxOlDepth(child, depth)
+          if (d > max) max = d
+        }
+      }
+      return max
+    }
+    const maxDepth = maxOlDepth(pm, 0)
+    const hasL8Text = pm.innerText.includes('L8-should-flatten')
+    const l7Text = pm.innerText.includes('L7')
+    return { maxDepth, hasL8Text, l7Text }
+  })
+
+  if (depthCheck.maxDepth <= 7) ok(`setContent 8 層被攤平為 ${depthCheck.maxDepth} 層`)
+  else fail(`巢狀深度未被限制：${depthCheck.maxDepth} 層`)
+
+  if (depthCheck.l7Text) ok('L7 文字保留')
+  else fail('L7 文字遺失')
+
+  if (depthCheck.hasL8Text) ok('L8 文字內容保留（攤平至上層）')
+  else ok('L8 文字被移除（可接受）')
+
+  // 12b: 在第 7 層嘗試 sinkListItem → 應被阻擋
+  // 先載入 7 層巢狀
+  const depth7JSON = {
+    type: 'doc',
+    content: [
+      { type: 'orderedList', content: [
+        { type: 'listItem', content: [
+          { type: 'paragraph', content: [{ type: 'text', text: 'L1' }] },
+          { type: 'orderedList', content: [
+            { type: 'listItem', content: [
+              { type: 'paragraph', content: [{ type: 'text', text: 'L2' }] },
+              { type: 'orderedList', content: [
+                { type: 'listItem', content: [
+                  { type: 'paragraph', content: [{ type: 'text', text: 'L3' }] },
+                  { type: 'orderedList', content: [
+                    { type: 'listItem', content: [
+                      { type: 'paragraph', content: [{ type: 'text', text: 'L4' }] },
+                      { type: 'orderedList', content: [
+                        { type: 'listItem', content: [
+                          { type: 'paragraph', content: [{ type: 'text', text: 'L5' }] },
+                          { type: 'orderedList', content: [
+                            { type: 'listItem', content: [
+                              { type: 'paragraph', content: [{ type: 'text', text: 'L6' }] },
+                              { type: 'orderedList', content: [
+                                { type: 'listItem', content: [
+                                  { type: 'paragraph', content: [{ type: 'text', text: 'L7-first' }] },
+                                ] },
+                                { type: 'listItem', content: [
+                                  { type: 'paragraph', content: [{ type: 'text', text: 'L7-second' }] },
+                                ] },
+                              ] },
+                            ] },
+                          ] },
+                        ] },
+                      ] },
+                    ] },
+                  ] },
+                ] },
+              ] },
+            ] },
+          ] },
+        ] },
+      ] },
+    ],
+  }
+
+  await page.evaluate((json) => {
+    window.__tiptapEditor.commands.setContent(json)
+  }, depth7JSON)
+  await sleep(500)
+
+  // 將游標移到 L7-second，嘗試 sinkListItem
+  const sinkResult = await page.evaluate(() => {
+    const editor = window.__tiptapEditor
+    // 找到 L7-second 的位置
+    let targetPos = null
+    editor.state.doc.descendants((node, pos) => {
+      if (node.isText && node.text === 'L7-second') {
+        targetPos = pos
+      }
+    })
+    if (targetPos === null) return { error: 'L7-second not found' }
+
+    // 移動游標到 L7-second
+    editor.commands.setTextSelection(targetPos)
+
+    // 嘗試 sinkListItem
+    const canSink = editor.can().sinkListItem('listItem')
+    const sinkOk = editor.commands.sinkListItem('listItem')
+
+    // 檢查結果
+    function maxOlDepth(el, depth) {
+      let max = depth
+      for (const child of el.children) {
+        if (child.tagName === 'OL' || child.tagName === 'UL') {
+          const d = maxOlDepth(child, depth + 1)
+          if (d > max) max = d
+        } else {
+          const d = maxOlDepth(child, depth)
+          if (d > max) max = d
+        }
+      }
+      return max
+    }
+    const pm = document.querySelector('.ProseMirror')
+    const maxDepth = maxOlDepth(pm, 0)
+
+    return { canSink, sinkOk, maxDepth }
+  })
+
+  if (sinkResult.error) {
+    fail(sinkResult.error)
+  } else {
+    if (sinkResult.maxDepth <= 7) ok(`第 7 層 sinkListItem 後仍為 ${sinkResult.maxDepth} 層（未超過限制）`)
+    else fail(`sinkListItem 突破限制：${sinkResult.maxDepth} 層`)
+  }
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '12-depth-limit.png'), fullPage: true })
+
+  // ============================
+  // [13] 最終狀態截圖
+  // ============================
+  console.log('\n[13] 最終狀態截圖')
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '13-final.png'), fullPage: true })
   ok('最終狀態截圖完成')
 
   // ============================

@@ -1,5 +1,6 @@
 import { Extension } from '@tiptap/core'
 import { Plugin, PluginKey } from '@tiptap/pm/state'
+import { MAX_LIST_DEPTH } from './ListDepthLimit'
 
 /**
  * 偵測是否為 Word 產出的 HTML
@@ -163,7 +164,7 @@ function buildNestedList(
   const stack: HTMLOListElement[] = [root]
 
   for (const item of items) {
-    const targetLevel = item.level
+    const targetLevel = Math.min(item.level, MAX_LIST_DEPTH)
 
     if (targetLevel > stack.length) {
       // 需要深入 — 建立中間層的 ol

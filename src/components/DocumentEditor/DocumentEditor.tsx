@@ -21,6 +21,7 @@ import LineHeight from './extensions/LineHeight'
 import TextIndent from './extensions/TextIndent'
 import ListNumbering from './extensions/ListNumbering'
 import WordPaste from './extensions/WordPaste'
+import ListDepthLimit from './extensions/ListDepthLimit'
 import { DocumentEditorProps, PaperSize, Orientation, PAPER_DIMENSIONS } from './types/editor.types'
 import Toolbar from './Toolbar/Toolbar'
 import LinkBubbleMenu from './BubbleMenu/LinkBubbleMenu'
@@ -113,6 +114,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       ListKeymap,
       ListNumbering,
       WordPaste,
+      ListDepthLimit,
     ],
     content,
     editable,

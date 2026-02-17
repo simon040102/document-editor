@@ -8,6 +8,7 @@ import {
   Lock, LockOpen,
 } from 'lucide-react'
 import { ToolbarProps, CHINESE_PUNCTUATIONS, PAPER_DIMENSIONS, PAPER_CSS_SIZE, PaperSize } from '../types/editor.types'
+import { MAX_LIST_DEPTH, getListDepth } from '../extensions/ListDepthLimit'
 import { LINE_HEIGHT_STEPS, DEFAULT_LINE_HEIGHT } from '../extensions/LineHeight'
 import { INDENT_STEP, MAX_INDENT } from '../extensions/TextIndent'
 import '../styles/toolbar.css'
@@ -795,8 +796,12 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
       {/* 列表縮排 */}
       <div className="toolbar-group">
         <button
-          onClick={() => editor.chain().focus().sinkListItem('listItem').run()}
-          disabled={!editor.can().sinkListItem('listItem')}
+          onClick={() => {
+            if (getListDepth(editor.state) < MAX_LIST_DEPTH) {
+              editor.chain().focus().sinkListItem('listItem').run()
+            }
+          }}
+          disabled={!editor.can().sinkListItem('listItem') || getListDepth(editor.state) >= MAX_LIST_DEPTH}
           title="增加縮排（往右）"
         >
           <IndentIncrease size={16} />
