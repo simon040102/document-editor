@@ -189,12 +189,12 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
               p { margin: 0.5em 0; orphans: 3; widows: 3; }
 
-              ul, ol { padding-left: 2em; margin: 0.5em 0; }
+              ul, ol { padding-left: 3em; margin: 0.5em 0; }
 
               /* 第 1 層：一、 中文數字 + 全形頓號 */
               ol {
                 list-style: none;
-                padding-left: 2em;
+                padding-left: 3em;
               }
 
               ol > li {
@@ -215,8 +215,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
               ol > li > p:first-child::before {
                 content: counter(list-L1, trad-chinese-informal) '\u3001';
                 position: absolute;
-                left: -2em;
-                width: 2em;
+                left: -3em;
+                width: 3em;
                 text-align: right;
                 white-space: nowrap;
                 color: #000;
@@ -226,43 +226,43 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
               /* 第 2 層：(一) 半形括號 + 中文數字 */
               ol ol {
                 counter-reset: list-L2;
-                padding-left: 1.5em;
+                padding-left: 2.5em;
               }
 
               ol ol > li { counter-increment: list-L2; }
 
               ol ol > li > p:first-child::before {
                 content: '(' counter(list-L2, trad-chinese-informal) ')';
-                left: -2em;
-                width: 2em;
+                left: -2.5em;
+                width: 2.5em;
               }
 
               /* 第 3 層：1、 阿拉伯數字 + 全形頓號 */
               ol ol ol {
                 counter-reset: list-L3;
-                padding-left: 1.5em;
+                padding-left: 2em;
               }
 
               ol ol ol > li { counter-increment: list-L3; }
 
               ol ol ol > li > p:first-child::before {
                 content: counter(list-L3, decimal) '\u3001';
-                left: -1.5em;
-                width: 1.5em;
+                left: -2em;
+                width: 2em;
               }
 
               /* 第 4 層：(1) 半形括號 + 阿拉伯數字 */
               ol ol ol ol {
                 counter-reset: list-L4;
-                padding-left: 1.2em;
+                padding-left: 2em;
               }
 
               ol ol ol ol > li { counter-increment: list-L4; }
 
               ol ol ol ol > li > p:first-child::before {
                 content: '(' counter(list-L4, decimal) ')';
-                left: -1.5em;
-                width: 1.5em;
+                left: -2em;
+                width: 2em;
               }
 
               /* 第 5 層：甲、 天干 + 全形頓號 */

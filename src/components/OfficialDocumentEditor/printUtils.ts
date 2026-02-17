@@ -167,12 +167,12 @@ export function generateOfficialPrintHTML(
     .editor-content h5,
     .editor-content h6 { font-size: 12pt; margin: 0.5em 0 0.2em; page-break-after: avoid; }
 
-    .editor-content ul, .editor-content ol { padding-left: 2em; margin: 0.5em 0; }
+    .editor-content ul, .editor-content ol { padding-left: 3em; margin: 0.5em 0; }
 
     /* 第 1 層：一、 */
     .editor-content ol {
       list-style: none;
-      padding-left: 2em;
+      padding-left: 3em;
     }
     .editor-content ol > li {
       counter-increment: list-L1;
@@ -183,8 +183,8 @@ export function generateOfficialPrintHTML(
     .editor-content ol > li > p:first-child::before {
       content: counter(list-L1, trad-chinese-informal) '\\3001';
       position: absolute;
-      left: -2em;
-      width: 2em;
+      left: -3em;
+      width: 3em;
       text-align: right;
       white-space: nowrap;
       color: #000;
@@ -192,27 +192,27 @@ export function generateOfficialPrintHTML(
     }
 
     /* 第 2 層：(一) */
-    .editor-content ol ol { counter-reset: list-L2; padding-left: 1.5em; }
+    .editor-content ol ol { counter-reset: list-L2; padding-left: 2.5em; }
     .editor-content ol ol > li { counter-increment: list-L2; }
     .editor-content ol ol > li > p:first-child::before {
       content: '(' counter(list-L2, trad-chinese-informal) ')';
-      left: -2em; width: 2em;
+      left: -2.5em; width: 2.5em;
     }
 
     /* 第 3 層：1、 */
-    .editor-content ol ol ol { counter-reset: list-L3; padding-left: 1.5em; }
+    .editor-content ol ol ol { counter-reset: list-L3; padding-left: 2em; }
     .editor-content ol ol ol > li { counter-increment: list-L3; }
     .editor-content ol ol ol > li > p:first-child::before {
       content: counter(list-L3, decimal) '\\3001';
-      left: -1.5em; width: 1.5em;
+      left: -2em; width: 2em;
     }
 
     /* 第 4 層：(1) */
-    .editor-content ol ol ol ol { counter-reset: list-L4; padding-left: 1.2em; }
+    .editor-content ol ol ol ol { counter-reset: list-L4; padding-left: 2em; }
     .editor-content ol ol ol ol > li { counter-increment: list-L4; }
     .editor-content ol ol ol ol > li > p:first-child::before {
       content: '(' counter(list-L4, decimal) ')';
-      left: -1.5em; width: 1.5em;
+      left: -2em; width: 2em;
     }
 
     /* 第 5 層：甲、 */
