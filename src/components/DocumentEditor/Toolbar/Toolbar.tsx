@@ -21,11 +21,13 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
   const [punctuationAlign, setPunctuationAlign] = useState<'left' | 'right'>('left')
+  const [printPreviewHTML, setPrintPreviewHTML] = useState<string | null>(null)
 
   const punctuationRef = useRef<HTMLDivElement>(null)
   const colorPickerRef = useRef<HTMLDivElement>(null)
   const highlightPickerRef = useRef<HTMLDivElement>(null)
   const fontPickerRef = useRef<HTMLDivElement>(null)
+  const printIframeRef = useRef<HTMLIFrameElement>(null)
 
   // 點擊外部關閉面板
   useEffect(() => {
@@ -67,6 +69,16 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
     }
   }, [editor])
 
+  // 列印預覽開啟時隱藏主頁 scrollbar
+  useEffect(() => {
+    if (printPreviewHTML) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [printPreviewHTML])
+
   if (!editor) {
     return null
   }
@@ -90,17 +102,26 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
     const pageSize = orientation === 'landscape' ? `${cssSize} landscape` : cssSize
 
     // 根據是否有裝訂線決定邊距與排版
+    // @page margin 處理每頁上下邊距，body padding 處理裝訂線側邊距
     let pageMargin: string
     let bodyPadding: string
+    let printBodyPadding: string
     let bindingLineCSS = ''
     let bindingLineHTML = ''
 
     if (bindingLine) {
-      // 有裝訂線：@page margin: 0 消除瀏覽器頁首/頁尾，用 body padding 控制邊距
-      pageMargin = '0'
+      // 有裝訂線：@page margin 處理每頁上下距離，裝訂線側 margin: 0 讓 binding-line 貼齊紙邊
+      pageMargin = orientation === 'landscape'
+        ? '0 2cm 2cm 2cm'
+        : '2cm 2cm 2cm 0'
+      // 螢幕預覽用完整 padding
       bodyPadding = orientation === 'landscape'
         ? 'padding: 4cm 2cm 2cm 2cm;'
         : 'padding: 2cm 2cm 2cm 4cm;'
+      // 列印時只保留裝訂線側 padding（其餘由 @page margin 負責）
+      printBodyPadding = orientation === 'landscape'
+        ? 'padding: 4cm 0 0 0;'
+        : 'padding: 0 0 0 4cm;'
 
       const bindingLineStyle = orientation === 'landscape'
         ? `position: fixed; left: 0; right: 0; top: 0; height: 1.2cm;
@@ -115,33 +136,36 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
 
       bindingLineCSS = `
               .binding-line { ${bindingLineStyle} }
-              .binding-line::after { ${bindingLineAfter} }
-              @media screen {
-                .binding-line { display: none; }
-                body { padding: 2cm; }
-              }`
+              .binding-line::after { ${bindingLineAfter} }`
       bindingLineHTML = '<div class="binding-line"><span>裝</span><span>訂</span><span>線</span></div>'
     } else {
-      // 無裝訂線：@page margin: 0 消除瀏覽器頁首/頁尾，用 body padding 控制邊距
-      pageMargin = '0'
+      // 無裝訂線：@page margin 處理每頁四周距離
+      pageMargin = '2cm'
       bodyPadding = 'padding: 2cm;'
+      printBodyPadding = 'padding: 0;'
     }
 
-    // 創建一個新視窗用於列印
-    const printWindow = window.open('', '_blank', 'width=800,height=600')
-
-    if (printWindow) {
-      // 寫入 HTML 內容和樣式（依公文規範）
-      printWindow.document.write(`
+    // 產生列印預覽 HTML，顯示在同頁 overlay
+    const printHTML = `
         <!DOCTYPE html>
         <html>
           <head>
             <meta charset="utf-8">
-            <title>列印文件</title>
+            <title></title>
             <style>
               @page {
                 size: ${pageSize};
                 margin: ${pageMargin};
+                @top-left { content: ''; }
+                @top-center { content: ''; }
+                @top-right { content: ''; }
+                @bottom-left { content: ''; }
+                @bottom-center {
+                  content: counter(page);
+                  font-family: DFKai-SB, BiauKai, '標楷體', serif;
+                  font-size: 10pt;
+                }
+                @bottom-right { content: ''; }
               }
 
               body {
@@ -380,6 +404,10 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
               [style*='text-align: center'] { text-align: center; }
               [style*='text-align: right'] { text-align: right; }
               [style*='text-align: justify'] { text-align: justify; }
+
+              @media print {
+                body { margin: 0; ${printBodyPadding} }
+              }
             </style>
           </head>
           <body>
@@ -387,17 +415,25 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
             ${content}
           </body>
         </html>
-      `)
+      `
 
-      printWindow.document.close()
-
-      // 等待內容載入後執行列印
-      printWindow.onload = () => {
-        printWindow.focus()
-        printWindow.print()
-        // 不自動關閉，讓用戶控制
+    // 注入 @media screen CSS，讓 iframe 預覽顯示白紙效果
+    const dims = PAPER_DIMENSIONS[paperSize]
+    const pw = orientation === 'landscape' ? dims.height : dims.width
+    const ph = orientation === 'landscape' ? dims.width : dims.height
+    const screenPreviewCSS = `<style data-screen-preview>
+      @media screen {
+        html { background: #525659; }
+        body {
+          width: ${pw}mm;
+          margin: 20px auto;
+          min-height: ${ph}mm;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+          background: #fff;
+        }
       }
-    }
+    </style>`
+    setPrintPreviewHTML(printHTML.replace('</body>', screenPreviewCSS + '\n</body>'))
   }
 
   const toggleFullscreen = () => {
@@ -995,6 +1031,34 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, paperSize, orientation, bindi
           {wordCount.characters} 字 / {wordCount.words} 詞
         </span>
       </div>
+
+      {/* 列印預覽 overlay */}
+      {printPreviewHTML && (
+        <div className="print-preview-overlay">
+          <div className="print-preview-toolbar">
+            <button
+              className="print-preview-btn print-preview-btn-primary"
+              onClick={() => {
+                printIframeRef.current?.contentWindow?.print()
+              }}
+            >
+              列印
+            </button>
+            <button
+              className="print-preview-btn"
+              onClick={() => setPrintPreviewHTML(null)}
+            >
+              關閉
+            </button>
+          </div>
+          <iframe
+            ref={printIframeRef}
+            className="print-preview-iframe"
+            srcDoc={printPreviewHTML}
+            title="列印預覽"
+          />
+        </div>
+      )}
 
     </div>
   )

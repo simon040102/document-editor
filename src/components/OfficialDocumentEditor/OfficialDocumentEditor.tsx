@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { Editor } from '@tiptap/react'
 import DocumentEditor from '../DocumentEditor/DocumentEditor'
-import { PaperSize, Orientation } from '../DocumentEditor/types/editor.types'
+import { PaperSize, Orientation, PAPER_DIMENSIONS } from '../DocumentEditor/types/editor.types'
 import { OfficialDocFormData, defaultFormData, generateOfficialPrintHTML } from './printUtils'
 import './officialDocumentEditor.css'
 
@@ -35,6 +35,20 @@ const OfficialDocumentEditor: React.FC<OfficialDocumentEditorProps> = ({
   // JSON 面板狀態
   const [showJsonPanel, setShowJsonPanel] = useState(false)
   const [jsonInput, setJsonInput] = useState('')
+
+  // 列印預覽
+  const [printPreviewHTML, setPrintPreviewHTML] = useState<string | null>(null)
+  const printIframeRef = useRef<HTMLIFrameElement>(null)
+
+  // 列印預覽開啟時隱藏主頁 scrollbar
+  React.useEffect(() => {
+    if (printPreviewHTML) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [printPreviewHTML])
 
   const initialEditorContent = initialDocument?.editorContent
     ? (typeof initialDocument.editorContent === 'string'
@@ -94,15 +108,23 @@ const OfficialDocumentEditor: React.FC<OfficialDocumentEditorProps> = ({
       paperSizeRef.current,
       orientationRef.current
     )
-    const printWindow = window.open('', '_blank', 'width=800,height=600')
-    if (printWindow) {
-      printWindow.document.write(printHTML)
-      printWindow.document.close()
-      printWindow.onload = () => {
-        printWindow.focus()
-        printWindow.print()
+    // 注入 @media screen CSS，讓 iframe 預覽顯示白紙效果
+    const dims = PAPER_DIMENSIONS[paperSizeRef.current]
+    const pw = orientationRef.current === 'landscape' ? dims.height : dims.width
+    const ph = orientationRef.current === 'landscape' ? dims.width : dims.height
+    const screenPreviewCSS = `<style data-screen-preview>
+      @media screen {
+        html { background: #525659; }
+        body {
+          width: ${pw}mm;
+          margin: 20px auto;
+          min-height: ${ph}mm;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+          background: #fff;
+        }
       }
-    }
+    </style>`
+    setPrintPreviewHTML(printHTML.replace('</body>', screenPreviewCSS + '\n</body>'))
   }
 
   const handleReset = () => {
@@ -338,6 +360,34 @@ const OfficialDocumentEditor: React.FC<OfficialDocumentEditorProps> = ({
             onChange={e => setJsonInput(e.target.value)}
             placeholder="貼上 JSON 後點「載入 JSON」可還原整份公文（表單 + 編輯器內容）"
             spellCheck={false}
+          />
+        </div>
+      )}
+
+      {/* 列印預覽 overlay */}
+      {printPreviewHTML && (
+        <div className="print-preview-overlay">
+          <div className="print-preview-toolbar">
+            <button
+              className="print-preview-btn print-preview-btn-primary"
+              onClick={() => {
+                printIframeRef.current?.contentWindow?.print()
+              }}
+            >
+              列印
+            </button>
+            <button
+              className="print-preview-btn"
+              onClick={() => setPrintPreviewHTML(null)}
+            >
+              關閉
+            </button>
+          </div>
+          <iframe
+            ref={printIframeRef}
+            className="print-preview-iframe"
+            srcDoc={printPreviewHTML}
+            title="列印預覽"
           />
         </div>
       )}

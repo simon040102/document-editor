@@ -896,15 +896,120 @@ async function runTests() {
   }
 
   // ============================
-  // 最終截圖
+  // [11] 列印預覽測試（通用編輯器）
   // ============================
-  console.log('\n[11] 最終狀態截圖')
-  // 載回完整公文做最終截圖
+  console.log('\n[11] 列印預覽測試（通用編輯器）')
+
+  // 載入內容
   await page.evaluate((json) => {
     window.__tiptapEditor.commands.setContent(json)
   }, testJSON)
   await sleep(500)
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '10-final.png'), fullPage: true })
+
+  // 開啟列印預覽
+  const printBtn = await page.$('button[title*="列印"]')
+  if (printBtn) {
+    await printBtn.click()
+    await sleep(1500)
+
+    const overlayExists = await page.$('.print-preview-overlay')
+    if (overlayExists) {
+      ok('列印預覽 overlay 開啟成功')
+
+      // 檢查 iframe 內容
+      const previewCheck = await page.evaluate(() => {
+        const iframe = document.querySelector('.print-preview-iframe')
+        if (!iframe?.contentDocument) return null
+        const doc = iframe.contentDocument
+        const body = doc.body
+
+        // 取得 CSS 文字
+        const styleEls = doc.querySelectorAll('style')
+        const allCSS = Array.from(styleEls).map(s => s.textContent).join('\n')
+
+        return {
+          hasContent: body?.innerText?.length > 0,
+          bodyText: body?.innerText?.substring(0, 200) || '',
+          hasH1: !!body?.querySelector('h1'),
+          hasOl: !!body?.querySelector('ol'),
+          hasTable: !!body?.querySelector('table'),
+          // CSS 規則檢查
+          hasPageRule: allCSS.includes('@page'),
+          hasBottomCenter: allCSS.includes('@bottom-center'),
+          hasCounterPage: allCSS.includes('counter(page)'),
+          hasTopLeft: allCSS.includes('@top-left'),
+          hasTopRight: allCSS.includes('@top-right'),
+          hasBottomLeft: allCSS.includes('@bottom-left'),
+          hasBottomRight: allCSS.includes('@bottom-right'),
+          hasMediaPrint: allCSS.includes('@media print'),
+          titleText: doc.title || '',
+        }
+      })
+
+      if (previewCheck) {
+        if (previewCheck.hasContent) ok('iframe 有內容')
+        else fail('iframe 無內容')
+
+        if (previewCheck.hasH1) ok('iframe 含 H1 標題')
+        else fail('iframe 缺 H1')
+
+        if (previewCheck.hasOl) ok('iframe 含有序列表')
+        else fail('iframe 缺有序列表')
+
+        if (previewCheck.hasTable) ok('iframe 含表格')
+        else fail('iframe 缺表格')
+
+        // CSS @page margin boxes
+        if (previewCheck.hasPageRule) ok('@page 規則存在')
+        else fail('缺少 @page 規則')
+
+        if (previewCheck.hasBottomCenter && previewCheck.hasCounterPage) ok('@bottom-center 頁碼設定正確')
+        else fail(`@bottom-center: ${previewCheck.hasBottomCenter}, counter(page): ${previewCheck.hasCounterPage}`)
+
+        if (previewCheck.hasTopLeft && previewCheck.hasTopRight) ok('@top-left/right 已設定（覆蓋瀏覽器預設）')
+        else fail('缺少 @top-left 或 @top-right')
+
+        if (previewCheck.hasBottomLeft && previewCheck.hasBottomRight) ok('@bottom-left/right 已設定')
+        else fail('缺少 @bottom-left 或 @bottom-right')
+
+        if (!previewCheck.titleText || previewCheck.titleText.trim() === '') ok('<title> 為空')
+        else fail(`<title> 不為空: "${previewCheck.titleText}"`)
+
+        if (previewCheck.hasMediaPrint) ok('@media print 規則存在')
+        else fail('缺少 @media print')
+      } else {
+        fail('無法讀取 iframe 內容')
+      }
+
+      await page.screenshot({ path: path.join(SCREENSHOT_DIR, '11-print-preview.png'), fullPage: true })
+
+      // 關閉預覽
+      const closed = await page.evaluate(() => {
+        const btns = [...document.querySelectorAll('.print-preview-btn')]
+        const btn = btns.find(b => b.textContent.trim() === '關閉')
+        if (btn) { btn.click(); return true }
+        return false
+      })
+      await sleep(300)
+      if (closed) {
+        const overlayGone = await page.$('.print-preview-overlay')
+        if (!overlayGone) ok('overlay 已關閉')
+        else fail('overlay 未關閉')
+      } else {
+        fail('找不到關閉按鈕')
+      }
+    } else {
+      fail('列印預覽 overlay 未出現')
+    }
+  } else {
+    fail('找不到列印按鈕')
+  }
+
+  // ============================
+  // [12] 最終狀態截圖
+  // ============================
+  console.log('\n[12] 最終狀態截圖')
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '12-final.png'), fullPage: true })
   ok('最終狀態截圖完成')
 
   // ============================

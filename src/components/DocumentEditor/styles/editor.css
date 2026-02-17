@@ -33,7 +33,7 @@
   font-family: DFKai-SB, BiauKai, '標楷體', serif;
   text-align: justify;
   counter-reset: list-L1;
-  background: #fff;
+  background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
   padding: 76px 76px 76px 132px; /* 上2cm 右2cm 下2cm 左3.5cm(含裝訂線) */
   box-sizing: border-box;

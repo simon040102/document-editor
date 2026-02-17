@@ -56,10 +56,18 @@ export function generateOfficialPrintHTML(
   const cssSize = PAPER_CSS_SIZE[paperSize]
   const pageSize = orientation === 'landscape' ? `${cssSize} landscape` : cssSize
 
-  // 用 body padding 控制邊距（@page margin: 0 消除瀏覽器自動頁首/頁尾）
+  // @page margin 處理每頁上下邊距，裝訂線側 margin: 0 讓 binding-line 貼齊紙邊
+  const pageMargin = orientation === 'landscape'
+    ? '0 2cm 2cm 2cm'
+    : '2cm 2cm 2cm 0'
+  // 螢幕預覽用完整 padding
   const bodyPadding = orientation === 'landscape'
     ? 'padding: 4cm 2cm 2cm 2cm;'
     : 'padding: 2cm 2cm 2cm 4cm;'
+  // 列印時只保留裝訂線側 padding（其餘由 @page margin 負責）
+  const printBodyPadding = orientation === 'landscape'
+    ? 'padding: 4cm 0 0 0;'
+    : 'padding: 0 0 0 4cm;'
 
   const bindingLineStyle = orientation === 'landscape'
     ? `position: fixed; left: 0; right: 0; top: 0; height: 1.2cm;
@@ -78,11 +86,21 @@ export function generateOfficialPrintHTML(
 <html>
 <head>
   <meta charset="utf-8">
-  <title>公文列印</title>
+  <title></title>
   <style>
     @page {
       size: ${pageSize};
-      margin: 0;
+      margin: ${pageMargin};
+      @top-left { content: ''; }
+      @top-center { content: ''; }
+      @top-right { content: ''; }
+      @bottom-left { content: ''; }
+      @bottom-center {
+        content: counter(page);
+        font-family: DFKai-SB, BiauKai, '標楷體', serif;
+        font-size: 10pt;
+      }
+      @bottom-right { content: ''; }
     }
 
     body {
@@ -98,10 +116,6 @@ export function generateOfficialPrintHTML(
     /* 裝訂線 */
     .binding-line { ${bindingLineStyle} }
     .binding-line::after { ${bindingLineAfter} }
-    @media screen {
-      .binding-line { display: none; }
-      body { padding: 2cm; }
-    }
 
     /* 頂部資訊 */
     .doc-top {
@@ -317,6 +331,10 @@ export function generateOfficialPrintHTML(
       padding-top: 0.3cm;
     }
     .footer-block p { margin: 0.05cm 0; }
+
+    @media print {
+      body { margin: 0; ${printBodyPadding} }
+    }
   </style>
 </head>
 <body>

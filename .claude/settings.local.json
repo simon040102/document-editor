@@ -1,15 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(npm create:*)",
-      "Bash(node --version:*)",
-      "Bash(npm:*)",
-      "Bash(README.md << 'EOF'\n# Document Editor - 文件編輯器\n\n一個基於 React 和 Tiptap 的富文本編輯器，特別支援中文標點符號快速插入。\n\n## ✨ 特色功能\n\n### 📝 基本編輯功能\n- **文字格式化**：粗體、斜體、底線、刪除線\n- **標題層級**：H1-H6 支援\n- **文字顏色**：多色選擇器\n- **螢光筆**：多色背景標記\n\n### 🎯 中文特色功能\n- **中文標點符號面板**：一鍵插入常用中文標點\n  - 常用標點：、。，：；！？\n  - 特殊符號：— … ～ · ※\n  - 括號類：「」『』（）【】《》〈〉\n- 支援中文輸入法（IME）\n\n### 📐 段落格式\n- **文字對齊**：左對齊、置中、右對齊、兩端對齊\n- **列表**：有序列表、無序列表、巢狀列表\n- **引用區塊**：區塊引用樣式\n\n### 🔧 進階功能\n- **表格**：插入和編輯表格\n- **圖片**：圖片上傳與插入\n- **連結**：超連結插入與編輯\n- **程式碼區塊**：程式碼展示\n- **分隔線**：段落分隔\n\n### 💾 輸出功能\n- **HTML 輸出**：匯出為 HTML 格式\n- **JSON 輸出**：匯出為 JSON 格式\n- 即時預覽輸出結果\n\n## 🚀 快速開始\n\n### 安裝依賴\n\\\\`\\\\`\\\\`bash\nnpm install\n\\\\`\\\\`\\\\`\n\n### 啟動開發伺服器\n\\\\`\\\\`\\\\`bash\nnpm run dev\n\\\\`\\\\`\\\\`\n\n專案會在 \\\\`http://localhost:3000\\\\` 啟動。\n\n## 📦 整合到現有專案\n\n將 \\\\`src/components/DocumentEditor\\\\` 目錄複製到你的專案中，然後：\n\n\\\\`\\\\`\\\\`tsx\nimport DocumentEditor from './components/DocumentEditor'\n\nfunction MyApp\\(\\) {\n  const [content, setContent] = useState\\(''\\)\n  const [htmlContent, setHtmlContent] = useState\\(''\\)\n\n  return \\(\n    <DocumentEditor\n      content={content}\n      onChange={setContent}\n      onHTMLChange={setHtmlContent}\n      placeholder=\"開始輸入...\"\n    />\n  \\)\n}\n\\\\`\\\\`\\\\`\n\n## 🛠️ 技術棧\n\n- **React** 18.x\n- **TypeScript** 5.x\n- **Tiptap** 3.x\n- **Vite** 7.x\n\n支援 React 17.x / 18.x / 19.x\n\n---\n\n**Made with ❤️ using Tiptap**\nEOF)",
-      "Bash(git init:*)",
-      "Bash(git add:*)",
-      "Bash(git branch:*)",
-      "Bash(git push:*)",
-      "Bash(git commit:*)"
-    ]
+    "allow": ["Bash(*)", "WebFetch(*)", "Read(*)", "Write(*)", "Edit(*)"]
   }
 }
