@@ -103,7 +103,7 @@
 /* 有序列表使用中文數字 — 計數器延續跨 ol 區塊 */
 .ProseMirror ol {
   list-style: none;
-  padding-left: 3em;
+  padding-left: 4em;
 }
 
 .ProseMirror ol > li {
@@ -125,19 +125,21 @@
 .ProseMirror ol > li > p:first-child::before {
   content: counter(list-L1, trad-chinese-informal) '、';
   position: absolute;
-  left: -3em;
-  width: 3em;
+  left: -4em;
+  width: 4em;
   text-align: right;
   white-space: nowrap;
   color: #495057;
   font-weight: 500;
 }
 
-/* 巢狀列表的不同層級樣式 — 依公文規範 7 層（緊湊間距） */
+/* 巢狀列表的不同層級樣式 — 依公文規範 7 層
+   括號格式 (L2/L4/L6) width 比 left 小 0.5em，讓 marker 右側留白 */
+
 /* 第 2 層：(一) 半形括號 + 中文數字 */
 .ProseMirror ol ol {
   counter-reset: list-L2;
-  padding-left: 2.5em;
+  padding-left: 3.5em;
 }
 
 .ProseMirror ol ol > li {
@@ -146,8 +148,8 @@
 
 .ProseMirror ol ol > li > p:first-child::before {
   content: '(' counter(list-L2, trad-chinese-informal) ')';
-  left: -2.5em;
-  width: 2.5em;
+  left: -3.5em;
+  width: 3em;
 }
 
 /* 第 3 層：1、 阿拉伯數字 + 全形頓號 */
@@ -169,7 +171,7 @@
 /* 第 4 層：(1) 半形括號 + 阿拉伯數字 */
 .ProseMirror ol ol ol ol {
   counter-reset: list-L4;
-  padding-left: 2em;
+  padding-left: 2.5em;
 }
 
 .ProseMirror ol ol ol ol > li {
@@ -178,14 +180,14 @@
 
 .ProseMirror ol ol ol ol > li > p:first-child::before {
   content: '(' counter(list-L4, decimal) ')';
-  left: -2em;
+  left: -2.5em;
   width: 2em;
 }
 
 /* 第 5 層：甲、 天干 + 全形頓號 */
 .ProseMirror ol ol ol ol ol {
   counter-reset: list-L5;
-  padding-left: 1.8em;
+  padding-left: 2em;
 }
 
 .ProseMirror ol ol ol ol ol > li {
@@ -194,14 +196,14 @@
 
 .ProseMirror ol ol ol ol ol > li > p:first-child::before {
   content: counter(list-L5, cjk-heavenly-stem) '\3001';
-  left: -1.8em;
-  width: 1.8em;
+  left: -2em;
+  width: 2em;
 }
 
 /* 第 6 層：(甲) 半形括號 + 天干 */
 .ProseMirror ol ol ol ol ol ol {
   counter-reset: list-L6;
-  padding-left: 1.3em;
+  padding-left: 2.5em;
 }
 
 .ProseMirror ol ol ol ol ol ol > li {
@@ -210,14 +212,14 @@
 
 .ProseMirror ol ol ol ol ol ol > li > p:first-child::before {
   content: '(' counter(list-L6, cjk-heavenly-stem) ')';
-  left: -1.8em;
-  width: 1.8em;
+  left: -2.5em;
+  width: 2em;
 }
 
 /* 第 7 層：子、 地支 + 全形頓號 */
 .ProseMirror ol ol ol ol ol ol ol {
   counter-reset: list-L7;
-  padding-left: 1.8em;
+  padding-left: 2em;
 }
 
 .ProseMirror ol ol ol ol ol ol ol > li {
@@ -226,8 +228,8 @@
 
 .ProseMirror ol ol ol ol ol ol ol > li > p:first-child::before {
   content: counter(list-L7, cjk-earthly-branch) '\3001';
-  left: -1.8em;
-  width: 1.8em;
+  left: -2em;
+  width: 2em;
 }
 
 /* 重新編號 — counter-set 重置計數器（不建立新 scope，後續 ol 接續新值） */
