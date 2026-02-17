@@ -73,7 +73,7 @@ export function generateOfficialPrintHTML(
     ? `position: fixed; left: 0; right: 0; top: 0; height: 1.2cm;
        display: flex; flex-direction: row; align-items: center; justify-content: center;
        gap: 2cm; font-size: 14pt; color: #888; z-index: 10;`
-    : `position: fixed; left: 0; top: 0; bottom: 0; width: 1.2cm;
+    : `position: fixed; left: 0; top: 0; width: 1.2cm; height: 100vh;
        display: flex; flex-direction: column; align-items: center; justify-content: center;
        gap: 2cm; font-size: 14pt; color: #888; z-index: 10;`
   const bindingLineAfter = orientation === 'landscape'
